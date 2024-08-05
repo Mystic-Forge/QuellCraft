@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "quellcraft",
+  "version": "${version}",
+  "name": "QuellCraft",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/quellcraft/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "net.mysticforge.quellcraft.client.QuellcraftClient"
+    ],
+    "main": [
+      "net.mysticforge.quellcraft.Quellcraft"
+    ]
+  },
+  "mixins": [
+    "quellcraft.mixins.json",
+    {
+      "config": "quellcraft.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-language-kotlin": ">=${kotlin_loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
