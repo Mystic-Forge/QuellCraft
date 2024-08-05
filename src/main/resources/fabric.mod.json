@@ -11,10 +11,16 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "net.mysticforge.quellcraft.client.QuellcraftClient"
+      {
+        "value": "net.mysticforge.quellcraft.client.QuellcraftClient",
+        "adapter": "kotlin"
+      }
     ],
     "main": [
-      "net.mysticforge.quellcraft.Quellcraft"
+      {
+        "value": "net.mysticforge.quellcraft.Quellcraft",
+        "adapter": "kotlin"
+      }
     ]
   },
   "mixins": [

@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "quellcraft:block/crystal",
+      "x": 180
+    },
+    "facing=east": {
+      "model": "quellcraft:block/crystal",
+      "x": 90,
+      "y": 90
+    },
+    "facing=north": {
+      "model": "quellcraft:block/crystal",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "quellcraft:block/crystal",
+      "x": 90,
+      "y": 180
+    },
+    "facing=up": {
+      "model": "quellcraft:block/crystal"
+    },
+    "facing=west": {
+      "model": "quellcraft:block/crystal",
+      "x": 90,
+      "y": 270
+    }
+  }
+}
