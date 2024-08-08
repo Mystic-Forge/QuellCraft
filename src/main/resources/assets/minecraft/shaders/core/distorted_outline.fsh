@@ -29,7 +29,7 @@ void main() {
     vec4 noise1 = texture(Sampler0, uv + vec2(offset, offset));
     vec4 noise2 = texture(Sampler0, uv + vec2(0.25, 0.5) - vec2(offset, offset));
     float combinedNoise = noise1.r * noise2.r;
-    float gradient = smoothstep(lerp(0.4, 0.0, vertexColor.r), 0.8, dist);
+    float gradient = smoothstep(lerp(.4, 0.0, vertexColor.r), lerp(1.3, 1.0, vertexColor.r), dist);
     float result = (combinedNoise * gradient) + gradient;
 
     float threshold = 0.5 - vertexColor.r * 0.4;

@@ -15,11 +15,13 @@ import net.mysticforge.quellcraft.ModEffects
 import net.mysticforge.quellcraft.Quellcraft
 import net.mysticforge.quellcraft.client.screens.MistikTolisScreen
 import net.mysticforge.quellcraft.items.MistikTolisItem
+import org.joml.Math
 import org.joml.Matrix4f
 
 
 object QuellcraftClient : ClientModInitializer {
     private var shader = lazy { FabricShaderProgram(MinecraftClient.getInstance().resourceManager, Identifier.of("minecraft", "distorted_outline"), VertexFormats.POSITION_COLOR_TEXTURE)}
+    private var previousEffectLevel = 0f
 
     override fun onInitializeClient() {
         ClientPlayNetworking.registerGlobalReceiver(MistikTolisItem.openMistikTolisPacketID) { client, _, _, _ ->
@@ -33,14 +35,22 @@ object QuellcraftClient : ClientModInitializer {
         RenderSystem.setShaderGameTime(MinecraftClient.getInstance().world!!.time, tickDelta)
 
         val player = MinecraftClient.getInstance().player ?: return
-        val effect = player.getStatusEffect(ModEffects.distortedEffect) ?: return
+        val effect = player.getStatusEffect(ModEffects.distortedEffect)
+
+        var targetEffectLevel = if (effect != null) effect.amplifier.toFloat() + 1 else 0f
+
+        previousEffectLevel = Math.lerp(previousEffectLevel, targetEffectLevel, 0.05f)
+
+        if (previousEffectLevel <= 0.01) {
+            return
+        }
 
         val noise = Identifier.of(Quellcraft.MOD_ID, "textures/misc/quell_noise.png")
         RenderSystem.disableDepthTest()
         val matrix4f: Matrix4f = context.matrices.peek().positionMatrix
         val bufferBuilder = Tessellator.getInstance().buffer
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE)
-        val amplifierRedChannel = effect.amplifier / 4f
+        val amplifierRedChannel = previousEffectLevel / 5f
         bufferBuilder.vertex(matrix4f, 0f, 0f, 0f)
             .color(amplifierRedChannel, 0.0f, 0.0f, 0.0f)
             .texture(0f, 0f)
@@ -58,7 +68,7 @@ object QuellcraftClient : ClientModInitializer {
             .texture(1f, 0f)
             .next()
 
-        RenderSystem.setShader { shader.value }
+        RenderSystem.setShader {FabricShaderProgram(MinecraftClient.getInstance().resourceManager, Identifier.of("minecraft", "distorted_outline"), VertexFormats.POSITION_COLOR_TEXTURE)};// { shader.value }
         RenderSystem.setShaderTexture(0, noise)
         RenderSystem.depthMask(false)
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end())
