@@ -1,4 +1,17 @@
 {
-  "block.quellcraft.crystal": "Crystal",
-  "item.quellcraft.crystal_shard": "Crystal Shard"
+  "itemGroup.quellcraft": "QuellCraft",
+
+  "item.quellcraft.mistik_tolis": "Mistik Tolis",
+
+  "block.quellcraft.spectrite_cluster": "Spectrite Cluster",
+  "block.quellcraft.void_cluster": "Void Cluster",
+
+  "item.quellcraft.spectrite_shard": "Spectrite Shard",
+  "item.quellcraft.void_crystal_shard": "Void Shard",
+
+  "item.quellcraft.spectrite_dust": "Spectrite Dust",
+
+  "item.quellcraft.mortar_and_pestle": "Mortar & Pestle",
+
+  "effect.quellcraft.distorted": "Distorted"
 }

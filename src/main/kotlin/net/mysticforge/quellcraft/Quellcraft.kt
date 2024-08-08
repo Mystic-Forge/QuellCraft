@@ -7,6 +7,7 @@ object Quellcraft : ModInitializer {
 
     override fun onInitialize() {
         ModBlocks
-        ModItems
+        ModItems.inititalize()
+        ModEffects
     }
 }

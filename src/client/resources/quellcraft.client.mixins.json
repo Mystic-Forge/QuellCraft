@@ -4,6 +4,7 @@
   "package": "net.mysticforge.quellcraft.mixin.client",
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "DistortedOverlayMixin"
   ],
   "injectors": {
     "defaultRequire": 1

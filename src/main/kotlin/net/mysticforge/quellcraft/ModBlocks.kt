@@ -10,7 +10,8 @@ import net.mysticforge.quellcraft.blocks.CrystalBlock
 
 
 object ModBlocks {
-    val crystal = register(CrystalBlock, "crystal")
+    val spectriteCluster = register(CrystalBlock(0), "spectrite_cluster")
+    val voidCluster = register(CrystalBlock(5), "void_cluster")
 
     private fun register(block: Block, name: String, shouldRegisterItem: Boolean = true): Block {
         val id = Identifier.of(Quellcraft.MOD_ID, name)

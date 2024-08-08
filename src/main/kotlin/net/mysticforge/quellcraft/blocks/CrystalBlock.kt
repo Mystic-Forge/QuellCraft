@@ -2,8 +2,11 @@ package net.mysticforge.quellcraft.blocks
 
 import net.minecraft.block.*
 import net.minecraft.block.AbstractBlock.Offsetter
+import net.minecraft.entity.effect.StatusEffectInstance
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.fluid.Fluids
 import net.minecraft.item.ItemPlacementContext
+import net.minecraft.sound.BlockSoundGroup
 import net.minecraft.state.StateManager
 import net.minecraft.state.property.Properties
 import net.minecraft.util.math.BlockPos
@@ -11,17 +14,20 @@ import net.minecraft.util.math.Direction
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.shape.VoxelShape
 import net.minecraft.world.BlockView
+import net.minecraft.world.World
 import net.minecraft.world.WorldAccess
 import net.minecraft.world.WorldView
+import net.mysticforge.quellcraft.ModEffects
 import java.util.*
 
-object CrystalBlock : Block(
+class CrystalBlock(light: Int) : Block(
     Settings.create()
         .nonOpaque()
         .dynamicBounds()
-        .luminance { 5 }
-        .emissiveLighting(Blocks::always)
+        .luminance { light }
+        .emissiveLighting { _, _, _ -> light > 0 }
         .noCollision()
+        .sounds(BlockSoundGroup.AMETHYST_BLOCK)
         .offset(OffsetType.XZ)
         .also { settings ->
             val offsetterField = Settings::class.java.declaredFields.first { it.type == Optional::class.java }
@@ -89,5 +95,14 @@ object CrystalBlock : Block(
 
     override fun appendProperties(builder: StateManager.Builder<Block?, BlockState?>) {
         builder.add(Properties.WATERLOGGED, Properties.FACING)
+    }
+
+    override fun onBreak(world: World?, pos: BlockPos?, state: BlockState?, player: PlayerEntity?) {
+        super.onBreak(world, pos, state, player)
+        player?.addStatusEffect(StatusEffectInstance(ModEffects.distortedEffect, 400, 0))
+
+        for(i in 0 until 4) {
+
+        }
     }
 }

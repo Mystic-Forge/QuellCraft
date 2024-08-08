@@ -1,0 +1,7 @@
+{
+	"parent": "quellcraft:item/spectrite_cluster",
+	"textures": {
+		"2": "quellcraft:block/void_cluster",
+		"particle": "quellcraft:block/void_cluster"
+	}
+}

@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "quellcraft:mortar_and_pestle"
+    },
+    {
+      "item": "quellcraft:spectrite_shard"
+    }
+  ],
+  "result": {
+    "item": "quellcraft:spectrite_dust"
+  }
+}
