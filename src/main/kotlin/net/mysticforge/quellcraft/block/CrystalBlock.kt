@@ -1,8 +1,10 @@
-package net.mysticforge.quellcraft.blocks
+package net.mysticforge.quellcraft.block
 
 import net.minecraft.block.*
 import net.minecraft.block.AbstractBlock.Offsetter
-import net.minecraft.entity.effect.StatusEffectInstance
+import net.minecraft.block.entity.BlockEntity
+import net.minecraft.block.entity.BlockEntityTicker
+import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.fluid.Fluids
 import net.minecraft.item.ItemPlacementContext
@@ -17,15 +19,15 @@ import net.minecraft.world.BlockView
 import net.minecraft.world.World
 import net.minecraft.world.WorldAccess
 import net.minecraft.world.WorldView
-import net.mysticforge.quellcraft.ModEffects
+import net.mysticforge.quellcraft.block.entity.CrystalBlockEntity
 import java.util.*
 
-class CrystalBlock(light: Int) : Block(
+object CrystalBlock : BlockWithEntity(
     Settings.create()
         .nonOpaque()
         .dynamicBounds()
-        .luminance { light }
-        .emissiveLighting { _, _, _ -> light > 0 }
+//        .luminance { light }
+//        .emissiveLighting { _, _, _ -> light > 0 }
         .noCollision()
         .sounds(BlockSoundGroup.AMETHYST_BLOCK)
         .offset(OffsetType.XZ)
@@ -47,6 +49,7 @@ class CrystalBlock(light: Int) : Block(
             }))
         }
 ), Waterloggable {
+
     private val outlines = mapOf(
         Direction.UP to createCuboidShape(4.0, 0.0, 4.0, 12.0, 5.0, 12.0),
         Direction.DOWN to createCuboidShape(4.0, 11.0, 4.0, 12.0, 16.0, 12.0),
@@ -70,6 +73,9 @@ class CrystalBlock(light: Int) : Block(
         state.getModelOffset(world, pos).let { offset -> outlines[state[Properties.FACING]]!!.offset(offset.x, offset.y, offset.z) }
 
     @Suppress("OVERRIDE_DEPRECATION")
+    override fun getRenderType(state: BlockState?) = BlockRenderType.MODEL
+
+    @Suppress("OVERRIDE_DEPRECATION")
     override fun canPlaceAt(state: BlockState, world: WorldView, pos: BlockPos): Boolean {
         val direction = state.get(Properties.FACING)
         val blockPos = pos.offset(direction.opposite)
@@ -79,7 +85,9 @@ class CrystalBlock(light: Int) : Block(
     override fun getPlacementState(ctx: ItemPlacementContext): BlockState? {
         val worldAccess: WorldAccess = ctx.world
         val blockPos = ctx.blockPos
-        return defaultState.with(Properties.WATERLOGGED, worldAccess.getFluidState(blockPos).fluid === Fluids.WATER).with(Properties.FACING, ctx.side)
+        return defaultState
+            .with(Properties.WATERLOGGED, worldAccess.getFluidState(blockPos).fluid === Fluids.WATER)
+            .with(Properties.FACING, ctx.side)
     }
 
     @Suppress("OVERRIDE_DEPRECATION")
@@ -97,12 +105,24 @@ class CrystalBlock(light: Int) : Block(
         builder.add(Properties.WATERLOGGED, Properties.FACING)
     }
 
-    override fun onBreak(world: World?, pos: BlockPos?, state: BlockState?, player: PlayerEntity?) {
+    override fun createBlockEntity(pos: BlockPos, state: BlockState) = CrystalBlockEntity(pos, state)
+
+    override fun onBreak(world: World, pos: BlockPos, state: BlockState, player: PlayerEntity) {
         super.onBreak(world, pos, state, player)
-        player?.addStatusEffect(StatusEffectInstance(ModEffects.distortedEffect, 400, 0))
+        val blockEntity = world?.getBlockEntity(pos) as? CrystalBlockEntity ?: return
+        blockEntity.onBreak(world, pos, state, player)
+    }
 
-        for(i in 0 until 4) {
-
+    override fun <T : BlockEntity?> getTicker(world: World, state: BlockState, type: BlockEntityType<T>): BlockEntityTicker<T>? {
+        return checkType(
+            type, ModBlocks.crystalBlockEntityType
+        ) { blockWorld: World, pos: BlockPos, blockState: BlockState, blockEntity: CrystalBlockEntity ->
+            blockEntity.tick(
+                blockWorld,
+                pos,
+                blockState,
+                blockEntity
+            )
         }
     }
 }

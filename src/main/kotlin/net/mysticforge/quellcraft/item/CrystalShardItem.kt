@@ -1,4 +1,4 @@
-package net.mysticforge.quellcraft.items
+package net.mysticforge.quellcraft.item
 
 import net.minecraft.item.Item
 

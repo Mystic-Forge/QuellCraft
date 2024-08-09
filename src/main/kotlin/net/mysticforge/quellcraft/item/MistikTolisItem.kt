@@ -1,4 +1,4 @@
-package net.mysticforge.quellcraft.items
+package net.mysticforge.quellcraft.item
 
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking

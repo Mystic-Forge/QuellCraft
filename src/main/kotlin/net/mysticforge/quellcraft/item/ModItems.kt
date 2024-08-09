@@ -1,4 +1,4 @@
-package net.mysticforge.quellcraft
+package net.mysticforge.quellcraft.item
 
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroupEntries
@@ -12,7 +12,8 @@ import net.minecraft.registry.Registry
 import net.minecraft.registry.RegistryKey
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
-import net.mysticforge.quellcraft.items.MistikTolisItem
+import net.mysticforge.quellcraft.Quellcraft
+import net.mysticforge.quellcraft.block.ModBlocks
 
 
 object ModItems {
@@ -34,8 +35,7 @@ object ModItems {
         // Register items to the custom item group.
         ItemGroupEvents.modifyEntriesEvent(customItemGroupKey).register(ModifyEntries { itemGroup: FabricItemGroupEntries ->
             itemGroup.add(mistikTolis)
-            itemGroup.add(ModBlocks.spectriteCluster.asItem())
-            itemGroup.add(ModBlocks.voidCluster.asItem())
+            itemGroup.add(ModBlocks.crystalCluster.asItem())
             itemGroup.add(depletedCrystalShard)
             itemGroup.add(voidShard)
             itemGroup.add(depletedCrystalDust)

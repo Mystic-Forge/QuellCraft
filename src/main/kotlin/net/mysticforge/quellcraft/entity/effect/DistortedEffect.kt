@@ -102,7 +102,7 @@ class DistortedEffect : StatusEffect(StatusEffectCategory.HARMFUL, 0x000000) {
 
     private fun applyEffect(entity: LivingEntity, amplifier: Int, random: Random): Int {
         val randomEffectIndex = random.nextInt(effects.size)
-        println("Applying effect $randomEffectIndex")
+//        println("Applying effect $randomEffectIndex")
         val (applyEffect, _) = effects[randomEffectIndex]
         applyEffect(entity, amplifier)
         return randomEffectIndex

@@ -9,7 +9,7 @@
           "children": [
             {
               "type": "minecraft:item",
-              "name": "quellcraft:spectrite_cluster",
+              "name": "quellcraft:crystal_cluster",
               "conditions": [
                 {
                   "condition": "minecraft:match_tool",

@@ -2,6 +2,7 @@ package net.mysticforge.quellcraft.client
 
 import com.mojang.blaze3d.systems.RenderSystem
 import net.fabricmc.api.ClientModInitializer
+import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
 import net.fabricmc.fabric.impl.client.rendering.FabricShaderProgram
 import net.minecraft.client.MinecraftClient
@@ -10,11 +11,15 @@ import net.minecraft.client.render.BufferRenderer
 import net.minecraft.client.render.Tessellator
 import net.minecraft.client.render.VertexFormat
 import net.minecraft.client.render.VertexFormats
+import net.minecraft.client.render.block.entity.BlockEntityRendererFactories
 import net.minecraft.util.Identifier
 import net.mysticforge.quellcraft.ModEffects
 import net.mysticforge.quellcraft.Quellcraft
+import net.mysticforge.quellcraft.block.ModBlocks
+import net.mysticforge.quellcraft.client.render.block.entity.CrystalBlockEntityRenderer
+import net.mysticforge.quellcraft.client.render.block.entity.QuellcraftModelLoadingPlugin
 import net.mysticforge.quellcraft.client.screens.MistikTolisScreen
-import net.mysticforge.quellcraft.items.MistikTolisItem
+import net.mysticforge.quellcraft.item.MistikTolisItem
 import org.joml.Math
 import org.joml.Matrix4f
 
@@ -29,6 +34,10 @@ object QuellcraftClient : ClientModInitializer {
                 client.setScreen(MistikTolisScreen)
             }
         }
+
+        BlockEntityRendererFactories.register(ModBlocks.crystalBlockEntityType, ::CrystalBlockEntityRenderer)
+
+        ModelLoadingPlugin.register(QuellcraftModelLoadingPlugin())
     }
 
     fun drawDistortedEffect(context: DrawContext, tickDelta: Float) {
@@ -68,7 +77,7 @@ object QuellcraftClient : ClientModInitializer {
             .texture(1f, 0f)
             .next()
 
-        RenderSystem.setShader {FabricShaderProgram(MinecraftClient.getInstance().resourceManager, Identifier.of("minecraft", "distorted_outline"), VertexFormats.POSITION_COLOR_TEXTURE)};// { shader.value }
+        RenderSystem.setShader { shader.value }
         RenderSystem.setShaderTexture(0, noise)
         RenderSystem.depthMask(false)
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end())

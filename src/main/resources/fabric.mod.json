@@ -21,6 +21,9 @@
         "value": "net.mysticforge.quellcraft.Quellcraft",
         "adapter": "kotlin"
       }
+    ],
+    "cardinal-components": [
+      "net.mysticforge.quellcraft.components.ModComponents"
     ]
   },
   "mixins": [
@@ -35,5 +38,10 @@
     "fabric-language-kotlin": ">=${kotlin_loader_version}",
     "fabric": "*",
     "minecraft": "${minecraft_version}"
+  },
+  "custom": {
+    "cardinal-components": [
+      "quellcraft:quell_infusion"
+    ]
   }
 }
