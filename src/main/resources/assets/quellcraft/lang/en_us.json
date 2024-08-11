@@ -6,11 +6,14 @@
   "block.quellcraft.crystal_cluster": "Crystal Cluster",
 
   "item.quellcraft.spectrite_shard": "Spectrite Shard",
-  "item.quellcraft.void_crystal_shard": "Void Shard",
+  "item.quellcraft.void_shard": "Void Shard",
+  "item.quellcraft.thermal_shard": "Thermal Shard",
 
   "item.quellcraft.spectrite_dust": "Spectrite Dust",
 
   "item.quellcraft.mortar_and_pestle": "Mortar & Pestle",
 
-  "effect.quellcraft.distorted": "Distorted"
+  "effect.quellcraft.distorted": "Distorted",
+
+  "text.autoconfig.quellcraft.option.quellInfusionDecay": "Quell Infusion Decay"
 }

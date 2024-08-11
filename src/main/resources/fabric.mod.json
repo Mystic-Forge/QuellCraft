@@ -24,6 +24,9 @@
     ],
     "cardinal-components": [
       "net.mysticforge.quellcraft.components.ModComponents"
+    ],
+    "modmenu": [
+      "net.mysticforge.quellcraft.client.ModMenuIntegration"
     ]
   },
   "mixins": [
