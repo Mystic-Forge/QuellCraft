@@ -20,14 +20,15 @@ import net.minecraft.world.World
 import net.minecraft.world.WorldAccess
 import net.minecraft.world.WorldView
 import net.mysticforge.quellcraft.block.entity.CrystalBlockEntity
+import net.mysticforge.quellcraft.state.property.ModProperties
 import java.util.*
 
 object CrystalBlock : BlockWithEntity(
     Settings.create()
         .nonOpaque()
         .dynamicBounds()
-//        .luminance { light }
-//        .emissiveLighting { _, _, _ -> light > 0 }
+        .luminance { state -> state.get(ModProperties.intensity).toInt() }
+        .emissiveLighting { state, _, _ -> state.get(ModProperties.intensity).toInt() > 0 }
         .noCollision()
         .sounds(BlockSoundGroup.AMETHYST_BLOCK)
         .offset(OffsetType.XZ)
@@ -49,6 +50,9 @@ object CrystalBlock : BlockWithEntity(
             }))
         }
 ), Waterloggable {
+    init {
+        defaultState = defaultState.with(Properties.WATERLOGGED, false).with(Properties.FACING, Direction.UP).with(ModProperties.intensity, 0)
+    }
 
     private val outlines = mapOf(
         Direction.UP to createCuboidShape(4.0, 0.0, 4.0, 12.0, 5.0, 12.0),
@@ -58,10 +62,6 @@ object CrystalBlock : BlockWithEntity(
         Direction.WEST to createCuboidShape(11.0, 4.0, 4.0, 16.0, 12.0, 12.0),
         Direction.EAST to createCuboidShape(0.0, 4.0, 4.0, 5.0, 12.0, 12.0),
     )
-
-    init {
-        defaultState = defaultState.with(Properties.WATERLOGGED, false).with(Properties.FACING, Direction.UP)
-    }
 
     @Suppress("OVERRIDE_DEPRECATION")
     override fun getOutlineShape(
@@ -102,14 +102,14 @@ object CrystalBlock : BlockWithEntity(
     }
 
     override fun appendProperties(builder: StateManager.Builder<Block?, BlockState?>) {
-        builder.add(Properties.WATERLOGGED, Properties.FACING)
+        builder.add(Properties.WATERLOGGED, Properties.FACING, ModProperties.intensity)
     }
 
     override fun createBlockEntity(pos: BlockPos, state: BlockState) = CrystalBlockEntity(pos, state)
 
     override fun onBreak(world: World, pos: BlockPos, state: BlockState, player: PlayerEntity) {
         super.onBreak(world, pos, state, player)
-        val blockEntity = world?.getBlockEntity(pos) as? CrystalBlockEntity ?: return
+        val blockEntity = world.getBlockEntity(pos) as? CrystalBlockEntity ?: return
         blockEntity.onBreak(world, pos, state, player)
     }
 

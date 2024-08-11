@@ -11,86 +11,147 @@ import net.minecraft.network.listener.ClientPlayPacketListener
 import net.minecraft.network.packet.Packet
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket
 import net.minecraft.particle.ParticleTypes
+import net.minecraft.state.property.Properties
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import net.mysticforge.quellcraft.block.ModBlocks
 import net.mysticforge.quellcraft.components.ModComponents
-import net.mysticforge.quellcraft.entity.EntityUtilities
+import net.mysticforge.quellcraft.quellmanagement.QuellContent
+import net.mysticforge.quellcraft.quellmanagement.readQuellContent
+import net.mysticforge.quellcraft.quellmanagement.writeQuellContent
+import net.mysticforge.quellcraft.state.property.ModProperties
 import net.mysticforge.quellcraft.state.property.QuellType
+import net.mysticforge.quellcraft.util.getEntitiesOfType
+import net.mysticforge.quellcraft.util.nextDouble
+import kotlin.math.ceil
+import kotlin.random.Random
 
 
-class CrystalBlockEntity(blockPos: BlockPos, blockState: BlockState) : BlockEntity(ModBlocks.crystalBlockEntityType, blockPos, blockState), BlockEntityTicker<CrystalBlockEntity> {
-    var storedThaum = 0
-        private set
+class CrystalBlockEntity(blockPos: BlockPos, blockState: BlockState) :
+    BlockEntity(ModBlocks.crystalBlockEntityType, blockPos, blockState),
+    BlockEntityTicker<CrystalBlockEntity>
+{
+    companion object {
+        const val NBT_KEY = "quell_content"
+    }
 
-    var quellType = QuellType.NONE
-        private set
+    var quellContent: QuellContent = QuellContent.Empty
+    set (value) {
+        field = value
+        val powerLevel = ceil((value.storedThaum / 50f) * 5).toInt().coerceAtMost(5)
+        getWorld()?.setBlockState(pos, cachedState.with(ModProperties.intensity, powerLevel))
+        world?.updateListeners(pos, cachedState, cachedState, Block.NOTIFY_ALL)
+    }
+
+    /**
+     * Utility for getting the position of the visual model. This is useful since the model has random global offsets and 6 rotations
+     */
+    private fun BlockState.getModelPos(world: World, pos: BlockPos): Vec3d {
+        val modelOffset = getModelOffset(world, pos)
+        val facingOffset = get(Properties.FACING).opposite.unitVector.mul(0.5f)
+        return pos.toCenterPos().add(facingOffset.x.toDouble(), facingOffset.y.toDouble(), facingOffset.z.toDouble()).add(modelOffset)
+    }
 
     override fun tick(world: World, pos: BlockPos, state: BlockState, blockEntity: CrystalBlockEntity) {
         if (!world.isClient()) return
 
-        val offset = Vec3d(0.5, 0.5, 0.5)
         val random = world.random
-        for (i in 0 until 1) {
-            val randomOffset = offset.add(Vec3d(random.nextDouble() - 0.5, random.nextDouble() - 0.5, random.nextDouble() - 0.5))
-            world.addParticle(ParticleTypes.ASH, pos.x.toDouble() + randomOffset.x, pos.y.toDouble() + randomOffset.y, pos.z.toDouble() + randomOffset.z, 0.0, 0.0, 0.0)
-        }
-    }
+        val modelPos = state.getModelPos(world, pos)
 
-    fun addThaum(type: QuellType, amount: Int) {
-        if (quellType == type) {
-            storedThaum += amount
-        } else {
-            quellType = type
-            storedThaum = amount
+        (quellContent as? QuellContent.Filled)?.let { filledContent ->
+            if (random.nextInt(50) < filledContent.storedThaum) {
+                when (filledContent.quellType) {
+                    QuellType.VOID -> {
+                        val randomOffset = Vec3d(random.nextDouble() * 5 - 2.5, random.nextDouble() * 5 - 4, random.nextDouble() * 5 - 2.5).multiply(0.2)
+                        val targetOffset = randomOffset.normalize().multiply(0.2);
+                        world.addParticle(
+                            ParticleTypes.PORTAL,
+                            modelPos.x + targetOffset.x,
+                            modelPos.y + targetOffset.y,
+                            modelPos.z + targetOffset.z,
+                            randomOffset.x,
+                            randomOffset.y,
+                            randomOffset.z
+                        )
+                    }
+
+                    QuellType.THERMAL -> {
+                        val randomOffset = Vec3d(random.nextDouble() * 5 - 2.5, random.nextDouble() * 5 - 4, random.nextDouble() * 5 - 2.5).multiply(0.2)
+                        val targetOffset = randomOffset.normalize().multiply(0.2);
+                        world.addParticle(
+                            ParticleTypes.SMOKE,
+                            modelPos.x + targetOffset.x,
+                            modelPos.y + targetOffset.y,
+                            modelPos.z + targetOffset.z,
+                            0.0,
+                            0.05,
+                            0.0
+                        )
+                    }
+                }
+            }
         }
     }
 
     fun onBreak(world: World, pos: BlockPos, state: BlockState, player: PlayerEntity) {
-        EntityUtilities.getEntitiesOfType<LivingEntity>(world, Box(pos).expand(3.0)).forEach { entity ->
+        world.getEntitiesOfType<LivingEntity>(Box(pos).expand(3.0)).forEach { entity ->
             val quellInfusionComponent = ModComponents.quellInfusion.get(entity)
-            println("Entity ${entity.name.string} has ${quellInfusionComponent.getValue()} thaum")
-            quellInfusionComponent.setValue(quellInfusionComponent.getValue() + storedThaum)
-            println("Added $storedThaum to ${entity.name.string}")
-            println("Entity ${entity.name.string} now has ${quellInfusionComponent.getValue()} thaum")
+            quellInfusionComponent.setValue(quellInfusionComponent.getValue() + quellContent.storedThaum)
+        }
+
+        val random = world.random
+        for (i in 0..<(20 * quellContent.storedThaum).coerceAtMost(10000)) {
+            when ((quellContent as? QuellContent.Filled)?.quellType) {
+                QuellType.VOID -> {
+                    val randomOffset = Vec3d(random.nextDouble() - 0.5, random.nextDouble() - 0.5, random.nextDouble() - 0.5)
+                    val position = state.getModelPos(world, pos).add(randomOffset.normalize().multiply(0.4))
+                    val direction = randomOffset.normalize().multiply(random.nextDouble(2.0..<10.0))
+
+                    world.addParticle(
+                        ParticleTypes.REVERSE_PORTAL,
+                        position.x,
+                        position.y,
+                        position.z,
+                        direction.x,
+                        direction.y,
+                        direction.z
+                    )
+                }
+                QuellType.THERMAL -> {
+                    val randomOffset = Vec3d(random.nextDouble() - 0.5, random.nextDouble() - 0.5, random.nextDouble() - 0.5)
+                    val position = state.getModelPos(world, pos).add(randomOffset.normalize().multiply(0.4))
+                    val direction = randomOffset.normalize().multiply(random.nextDouble(0.3..<0.7))
+
+                    world.addParticle(
+                        if (Random.nextDouble() < 0.4) ParticleTypes.FLAME else ParticleTypes.SMOKE,
+                        position.x,
+                        position.y,
+                        position.z,
+                        direction.x,
+                        direction.y,
+                        direction.z
+                    )
+                }
+                else -> { }
+            }
         }
     }
 
     override fun toUpdatePacket(): Packet<ClientPlayPacketListener> = BlockEntityUpdateS2CPacket.create(this)
 
-    override fun toInitialChunkDataNbt(): NbtCompound = createNbt()
+    override fun toInitialChunkDataNbt(): NbtCompound = NbtCompound().writeQuellContent(NBT_KEY, quellContent)
 
     override fun readNbt(nbt: NbtCompound) {
         super.readNbt(nbt)
-        if (nbt.contains("stored_thaum")) {
-            this.storedThaum = nbt.getShort("stored_thaum").toInt()
-
-//            this.markDirty()
-        }
-
-        if (nbt.contains("quell_type")) {
-            val typeName = nbt.getString("quell_type")
-            val type = QuellType.entries.first { it.typeName == typeName }
-            if (quellType != type){
-                quellType = type
-                world?.updateListeners(pos, cachedState, cachedState, Block.NOTIFY_ALL)
-            }
-
-            println("Read quell type: $quellType")
-
-//            this.markDirty()
-        }
+        quellContent = nbt.readQuellContent(NBT_KEY)
     }
 
     override fun writeNbt(nbt: NbtCompound) {
         super.writeNbt(nbt)
-        nbt.putShort("stored_thaum", storedThaum.toShort())
-        nbt.putString("quell_type", quellType.typeName)
-
-        println("Wrote quell type: $quellType")
+        nbt.writeQuellContent(NBT_KEY, quellContent)
     }
 
-    override fun getRenderData() = quellType
+    override fun getRenderData() = quellContent
 }
