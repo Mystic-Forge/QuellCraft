@@ -11,12 +11,9 @@ import net.minecraft.client.render.BufferRenderer
 import net.minecraft.client.render.Tessellator
 import net.minecraft.client.render.VertexFormat
 import net.minecraft.client.render.VertexFormats
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactories
 import net.minecraft.util.Identifier
-import net.mysticforge.quellcraft.ModEffects
+import net.mysticforge.quellcraft.ModStatusEffects
 import net.mysticforge.quellcraft.Quellcraft
-import net.mysticforge.quellcraft.block.ModBlocks
-import net.mysticforge.quellcraft.client.render.block.entity.CrystalBlockEntityRenderer
 import net.mysticforge.quellcraft.client.render.block.entity.QuellcraftModelLoadingPlugin
 import net.mysticforge.quellcraft.client.screens.MistikTolisScreen
 import net.mysticforge.quellcraft.item.MistikTolisItem
@@ -25,7 +22,7 @@ import org.joml.Matrix4f
 
 
 object QuellcraftClient : ClientModInitializer {
-    private var shader = lazy { FabricShaderProgram(MinecraftClient.getInstance().resourceManager, Identifier.of("minecraft", "distorted_outline"), VertexFormats.POSITION_COLOR_TEXTURE)}
+    private val shader by lazy { FabricShaderProgram(MinecraftClient.getInstance().resourceManager, Identifier.of("minecraft", "distorted_outline"), VertexFormats.POSITION_COLOR_TEXTURE) }
     private var previousEffectLevel = 0f
 
     override fun onInitializeClient() {
@@ -35,18 +32,16 @@ object QuellcraftClient : ClientModInitializer {
             }
         }
 
-        BlockEntityRendererFactories.register(ModBlocks.crystalBlockEntityType, ::CrystalBlockEntityRenderer)
-
-        ModelLoadingPlugin.register(QuellcraftModelLoadingPlugin())
+        ModelLoadingPlugin.register(QuellcraftModelLoadingPlugin)
     }
 
     fun drawDistortedEffect(context: DrawContext, tickDelta: Float) {
         RenderSystem.setShaderGameTime(MinecraftClient.getInstance().world!!.time, tickDelta)
 
         val player = MinecraftClient.getInstance().player ?: return
-        val effect = player.getStatusEffect(ModEffects.distortedEffect)
+        val effect = player.getStatusEffect(ModStatusEffects.distortedEffect)
 
-        var targetEffectLevel = if (effect != null) effect.amplifier.toFloat() + 1 else 0f
+        val targetEffectLevel = if (effect != null) effect.amplifier.toFloat() + 1 else 0f
 
         previousEffectLevel = Math.lerp(previousEffectLevel, targetEffectLevel, 0.05f)
 
@@ -60,24 +55,26 @@ object QuellcraftClient : ClientModInitializer {
         val bufferBuilder = Tessellator.getInstance().buffer
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE)
         val amplifierRedChannel = previousEffectLevel / 5f
+        val aspectRatio = context.scaledWindowWidth.toFloat() / context.scaledWindowHeight.toFloat() / 3
         bufferBuilder.vertex(matrix4f, 0f, 0f, 0f)
-            .color(amplifierRedChannel, 0.0f, 0.0f, 0.0f)
+            .color(amplifierRedChannel, aspectRatio, 0.0f, 0.0f)
             .texture(0f, 0f)
             .next()
         bufferBuilder.vertex(matrix4f, 0f, context.scaledWindowHeight.toFloat(), 0f)
-            .color(amplifierRedChannel, 0.0f, 0.0f, 0.0f)
+            .color(amplifierRedChannel, aspectRatio, 0.0f, 0.0f)
             .texture(0f, 1f)
             .next()
         bufferBuilder.vertex(matrix4f, context.scaledWindowWidth.toFloat(), context.scaledWindowHeight.toFloat(), 0f)
-            .color(amplifierRedChannel, 0.0f, 0.0f, 0.0f)
+            .color(amplifierRedChannel, aspectRatio, 0.0f, 0.0f)
             .texture(1f, 1f)
             .next()
         bufferBuilder.vertex(matrix4f, context.scaledWindowWidth.toFloat(), 0f, 0f)
-            .color(amplifierRedChannel, 0.0f, 0.0f, 0.0f)
+            .color(amplifierRedChannel, aspectRatio, 0.0f, 0.0f)
             .texture(1f, 0f)
             .next()
 
-        RenderSystem.setShader { shader.value }
+
+        RenderSystem.setShader { shader }
         RenderSystem.setShaderTexture(0, noise)
         RenderSystem.depthMask(false)
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end())

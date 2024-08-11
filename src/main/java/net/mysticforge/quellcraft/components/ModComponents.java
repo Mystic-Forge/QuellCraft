@@ -9,8 +9,11 @@ import net.minecraft.util.Identifier;
 import net.mysticforge.quellcraft.Quellcraft;
 
 public final class ModComponents implements EntityComponentInitializer {
-    public static final ComponentKey<EntityQuellInfusionComponent> quellInfusion = ComponentRegistry.getOrCreate(Identifier.of(Quellcraft.MOD_ID, EntityQuellInfusionComponent.KEY), EntityQuellInfusionComponent.class);
-    @Override public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
+    public static final ComponentKey<EntityQuellInfusionComponent> quellInfusion =
+        ComponentRegistry.getOrCreate(Identifier.of(Quellcraft.MOD_ID, EntityQuellInfusionComponent.KEY), EntityQuellInfusionComponent.class);
+
+    @Override
+    public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
         registry.registerFor(LivingEntity.class, quellInfusion, EntityQuellInfusionComponent::new);
     }
 }

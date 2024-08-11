@@ -10,7 +10,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InGameHud.class)
 public class DistortedOverlayMixin {
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;enableBlend()V", shift = At.Shift.AFTER, ordinal = 0))
+    @Inject(
+        method = "render",
+        at = @At(
+            value = "INVOKE",
+            target = "Lcom/mojang/blaze3d/systems/RenderSystem;enableBlend()V",
+            shift = At.Shift.AFTER,
+            ordinal = 0
+        )
+    )
     public void render(DrawContext drawContext, float tickDelta, CallbackInfo callbackInfo) {
         QuellcraftClient.INSTANCE.drawDistortedEffect(drawContext, tickDelta);
     }

@@ -14,6 +14,7 @@ import net.minecraft.util.math.Vec3d
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.random.asKotlinRandom
 
 
 class DistortedEffect : StatusEffect(StatusEffectCategory.HARMFUL, 0x000000) {
@@ -22,43 +23,62 @@ class DistortedEffect : StatusEffect(StatusEffectCategory.HARMFUL, 0x000000) {
     private val speedModifierUUID = UUID.fromString("7bc001ee-31e2-438a-9b52-2a8480769fa1")
 
     // A list of effects stored in a pair where the first element is the apply effect and the second element is the remove effect
-    private val effects: List<Pair<(LivingEntity, Int) -> Unit, (LivingEntity, Int) -> Unit>> = listOf(
+    private val effects = listOf(
         // 2 Damage
-        Pair({ entity, _ ->
-            entity.damage(entity.world.damageSources.generic(), 2.0f)
-            entity.playSound(SoundEvents.ENTITY_TURTLE_EGG_CRACK, .5f, 2f)
-         }, { _, _ -> }),
+        EntityEffect(
+            apply = {
+                damage(world.damageSources.generic(), 2.0f)
+                playSound(SoundEvents.ENTITY_TURTLE_EGG_CRACK, 0.5f, 2f)
+            },
+            remove = { }
+        ),
         // 2 Health
-        Pair({entity, _ ->
-              entity.heal(2.0f)
-                entity.playSound(SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, 0.5f, 1.5f)
-             }, { _, _ -> }),
+        EntityEffect(
+            apply = {
+                heal(2.0f)
+                playSound(SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, 0.5f, 1.5f)
+            },
+            remove = { }
+        ),
         // Random minor speed
-        Pair({ entity, _ ->
-
-            val effectInstance = entity.attributes.getCustomInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)
-            if (effectInstance != null) {
-                effectInstance.removeModifier(speedModifierUUID)
-                effectInstance.addTemporaryModifier(EntityAttributeModifier(speedModifierUUID, ({ this.translationKey }), entity.random.nextTriangular(0.0, 0.05), EntityAttributeModifier.Operation.ADDITION))
+        EntityEffect(
+            apply = {
+                val effectInstance = attributes.getCustomInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)
+                if (effectInstance != null) {
+                    effectInstance.removeModifier(speedModifierUUID)
+                    effectInstance.addTemporaryModifier(EntityAttributeModifier(speedModifierUUID, { translationKey }, random.nextTriangular(0.0, 0.05), EntityAttributeModifier.Operation.ADDITION))
+                }
+                playSound(SoundEvents.BLOCK_LODESTONE_HIT, .8f, 1.5f)
+            },
+            remove = {
+                attributes.getCustomInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)?.removeModifier(speedModifierUUID)
             }
-            entity.playSound(SoundEvents.BLOCK_LODESTONE_HIT, .8f, 1.5f)
-        }, { entity, _ ->
-            entity.attributes.getCustomInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED)?.removeModifier(speedModifierUUID)
-        }),
+        ),
         // Pushed in a random direction
-        Pair({ entity, amplifier ->
-            val randomDirection = entity.random.nextFloat() * 2 * Math.PI
-            val amount =  0.5 + amplifier * 0.1
-            entity.addVelocity(cos(randomDirection) * amount, amount, sin(randomDirection) * amount)
-            entity.playSound(SoundEvents.BLOCK_BASALT_BREAK, 0.2f, 0.6f)
-        }, { _, _ -> }),
+        EntityEffect(
+            apply = {
+                val randomDirection = random.nextFloat() * 2 * Math.PI
+                val amount = 0.5 + it * 0.1
+                addVelocity(cos(randomDirection) * amount, amount, sin(randomDirection) * amount)
+                playSound(SoundEvents.BLOCK_BASALT_BREAK, 0.2f, 0.6f)
+            },
+            remove = { }
+        ),
         // Gain or lose small xp
-        Pair({ entity, _ ->
-            if(entity is PlayerEntity) {
-                entity.addExperience(entity.random.nextInt(4) - 2)
-                entity.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 0.2f, 1f)
-            }
-        }, { _, _ -> }),
+        EntityEffect(
+            apply = {
+                if (this is PlayerEntity) {
+                    addExperience(random.nextInt(4) - 2)
+                    playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 0.2f, 1f)
+                }
+            },
+            remove = { }
+        ),
+    )
+
+    private data class EntityEffect(
+        val apply: LivingEntity.(amplifier: Int) -> Unit,
+        val remove: LivingEntity.(amplifier: Int) -> Unit,
     )
 
     override fun onApplied(entity: LivingEntity?, attributes: AttributeContainer?, amplifier: Int) {
@@ -77,7 +97,7 @@ class DistortedEffect : StatusEffect(StatusEffectCategory.HARMFUL, 0x000000) {
         val lastEffectIndex = lastMobAppliedEffects[entity]!!
 
         // Voices
-        if(entity.world.isClient()) {
+        if (entity.world.isClient()) {
             val chance = entity.random.nextInt(100 - (amp * 15))
             if (chance == 0) {
                 val randomAngle = entity.random.nextFloat() * 2 * Math.PI
@@ -103,8 +123,7 @@ class DistortedEffect : StatusEffect(StatusEffectCategory.HARMFUL, 0x000000) {
     private fun applyEffect(entity: LivingEntity, amplifier: Int, random: Random): Int {
         val randomEffectIndex = random.nextInt(effects.size)
 //        println("Applying effect $randomEffectIndex")
-        val (applyEffect, _) = effects[randomEffectIndex]
-        applyEffect(entity, amplifier)
+        effects.random(random.asKotlinRandom()).apply(entity, amplifier)
         return randomEffectIndex
     }
 
