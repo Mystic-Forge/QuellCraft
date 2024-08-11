@@ -16,18 +16,17 @@ import net.minecraft.util.Identifier
 import org.joml.Matrix4f
 
 object MistikTolisScreen: Screen(Text.of("Mistik Tolis")) {
-
     var shader = FabricShaderProgram(MinecraftClient.getInstance().resourceManager, Identifier.of("minecraft", "mistik_tolis_background"), VertexFormats.POSITION_TEXTURE)
 
     override fun init() {
-        val buttonWidget: ButtonWidget = ButtonWidget.builder(Text.of("Hello World")) { btn ->
+        val buttonWidget = ButtonWidget.builder(Text.of("Hello World")) {
             client!!.toastManager.add(
                 SystemToast.create(this.client, SystemToast.Type.NARRATOR_TOGGLE, Text.of("Hello World!"), Text.of("This is a toast."))
             )
         }.dimensions(40, 40, 120, 20).build()
 
         // Register the button widget.
-        this.addDrawableChild(buttonWidget)
+        addDrawableChild(buttonWidget)
     }
 
     override fun render(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float) {
