@@ -35,15 +35,23 @@ loom {
 }
 
 repositories {
-    // Add repositories to retrieve artifacts from in here.
-    // You should only use this when depending on other mods because
-    // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-    // See https://docs.gradle.org/current/userguide/declaring_repositories.html
-    // for more information about repositories.
+    // Trinkets
+    maven {
+        name = "TerraformersMC"
+        url = uri("https://maven.terraformersmc.com/")
+    }
+    // CardinalComponents & Trinkets
     maven {
         name = "Ladysnake Mods"
         url = uri("https://maven.ladysnake.org/releases")
     }
+
+    // ClothConfig
+    maven { url = uri("https://maven.shedaniel.me/") }
+    maven { url = uri("https://maven.terraformersmc.com/releases/") }
+
+    // ModMenu
+    maven { url = uri("https://maven.terraformersmc.com/releases/") }
 }
 
 dependencies {
@@ -56,14 +64,21 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation("net.fabricmc.fabric-api:fabric-api:${project.property("fabric_version")}")
 
+    // Trinkets
+    modImplementation("dev.emi:trinkets:${project.property("trinkets_version")}")
+
+    // CardinalComponents
     val ccaVersion = property("cca_version") as String
-    // Replace modImplementation with modApi if you expose components in your own API
     modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-base:$ccaVersion")
     modImplementation("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:$ccaVersion")
-    // Copy the following only if you want to bundle Cardinal Components API as a Jar-in-Jar dependency
-    // (otherwise, you should configure the dependency on Modrinth/Curseforge)
     include("dev.onyxstudios.cardinal-components-api:cardinal-components-base:$ccaVersion")
     include("dev.onyxstudios.cardinal-components-api:cardinal-components-entity:$ccaVersion")
+
+    // ClothConfig
+    modApi("me.shedaniel.cloth:cloth-config-fabric:11.1.118")
+
+    // ModMenu
+    modApi("com.terraformersmc:modmenu:7.2.2")
 }
 
 tasks.processResources {
