@@ -42,6 +42,10 @@ class EntityQuellInfusionComponent(private val entity: LivingEntity) : IntCompon
         }
     }
 
+    fun addValue(value: Int) {
+        setValue(infusionAmount + value)
+    }
+
     override fun readFromNbt(tag: NbtCompound) {
         infusionAmount = tag.getInt(KEY)
     }

@@ -4,7 +4,6 @@ import net.minecraft.block.Block
 import net.minecraft.block.BlockState
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityTicker
-import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.network.listener.ClientPlayPacketListener
@@ -13,17 +12,15 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket
 import net.minecraft.particle.ParticleTypes
 import net.minecraft.state.property.Properties
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import net.mysticforge.quellcraft.block.ModBlocks
-import net.mysticforge.quellcraft.components.ModComponents
 import net.mysticforge.quellcraft.quellmanagement.QuellContent
+import net.mysticforge.quellcraft.quellmanagement.emitQuell
 import net.mysticforge.quellcraft.quellmanagement.readQuellContent
 import net.mysticforge.quellcraft.quellmanagement.writeQuellContent
 import net.mysticforge.quellcraft.state.property.ModProperties
 import net.mysticforge.quellcraft.state.property.QuellType
-import net.mysticforge.quellcraft.util.getEntitiesOfType
 import net.mysticforge.quellcraft.util.nextDouble
 import kotlin.math.ceil
 import kotlin.random.Random
@@ -96,10 +93,7 @@ class CrystalBlockEntity(blockPos: BlockPos, blockState: BlockState) :
     }
 
     fun onBreak(world: World, pos: BlockPos, state: BlockState, player: PlayerEntity) {
-        world.getEntitiesOfType<LivingEntity>(Box(pos).expand(3.0)).forEach { entity ->
-            val quellInfusionComponent = ModComponents.quellInfusion.get(entity)
-            quellInfusionComponent.setValue(quellInfusionComponent.getValue() + quellContent.storedThaum)
-        }
+        world.emitQuell(quellContent, state.getModelPos(world, pos), 5.0)
 
         val random = world.random
         for (i in 0..<(20 * quellContent.storedThaum).coerceAtMost(10000)) {

@@ -24,6 +24,7 @@ object ModItems {
     private val depletedCrystalDust: Item = register(Item(Item.Settings()), "spectrite_dust")
     private val mortarAndPestle: Item = register(Item(Item.Settings().maxCount(1)), "mortar_and_pestle")
     private val mistikTolis: Item = register(MistikTolisItem(Item.Settings()), "mistik_tolis")
+    private val luckyNecklace: Item = register(LuckyCrystal, "lucky_crystal")
 
     private fun register(item: Item, id: String) = Registry.register(Registries.ITEM, Identifier.of(Quellcraft.MOD_ID, id), item)
 
@@ -38,6 +39,7 @@ object ModItems {
             shards.forEach(itemGroup::add)
             itemGroup.add(depletedCrystalDust)
             itemGroup.add(mortarAndPestle)
+            itemGroup.add(luckyNecklace)
         }
     }
 }

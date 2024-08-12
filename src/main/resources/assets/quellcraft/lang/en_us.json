@@ -1,17 +1,17 @@
 {
   "itemGroup.quellcraft": "QuellCraft",
 
-  "item.quellcraft.mistik_tolis": "Mistik Tolis",
-
   "block.quellcraft.crystal_cluster": "Crystal Cluster",
+
+  "item.quellcraft.mistik_tolis": "Mistik Tolis",
+  "item.quellcraft.mortar_and_pestle": "Mortar & Pestle",
+  "item.quellcraft.spectrite_dust": "Spectrite Dust",
+  "item.quellcraft.lucky_crystal": "Lucky Crystal",
 
   "item.quellcraft.spectrite_shard": "Spectrite Shard",
   "item.quellcraft.void_shard": "Void Shard",
   "item.quellcraft.thermal_shard": "Thermal Shard",
 
-  "item.quellcraft.spectrite_dust": "Spectrite Dust",
-
-  "item.quellcraft.mortar_and_pestle": "Mortar & Pestle",
 
   "effect.quellcraft.distorted": "Distorted",
 

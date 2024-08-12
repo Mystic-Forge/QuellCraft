@@ -46,6 +46,7 @@ sealed interface QuellContent {
     }
 
     operator fun plus(other: QuellContent): QuellContent
+
 }
 
 fun NbtCompound.writeQuellContent(key: String, quellContent: QuellContent): NbtCompound {
@@ -91,6 +92,6 @@ fun NbtCompound.readQuellContent(key: String): QuellContent =
             }
         }
     } ?: run {
-        println("Failed to read QuellContent from NBT: $this. Defaulting to Empty.")
+//        println("Failed to read QuellContent from NBT: $this. Defaulting to Empty.")
         Empty
     }
