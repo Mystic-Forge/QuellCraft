@@ -15,10 +15,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import net.mysticforge.quellcraft.block.ModBlocks
-import net.mysticforge.quellcraft.quellmanagement.QuellContent
-import net.mysticforge.quellcraft.quellmanagement.emitQuell
-import net.mysticforge.quellcraft.quellmanagement.readQuellContent
-import net.mysticforge.quellcraft.quellmanagement.writeQuellContent
+import net.mysticforge.quellcraft.quellmanagement.*
 import net.mysticforge.quellcraft.state.property.ModProperties
 import net.mysticforge.quellcraft.state.property.QuellType
 import net.mysticforge.quellcraft.util.nextDouble
@@ -95,43 +92,8 @@ class CrystalBlockEntity(blockPos: BlockPos, blockState: BlockState) :
 
     fun onBreak(world: World, pos: BlockPos, state: BlockState, player: PlayerEntity) {
         world.emitQuell(quellContent, state.getModelPos(world, pos), 5.0)
-
-        val random = world.random
-        for (i in 0..<(20 * quellContent.storedThaum).coerceAtMost(10000)) {
-            when ((quellContent as? QuellContent.Filled)?.quellType) {
-                QuellType.VOID -> {
-                    val randomOffset = Vec3d(random.nextDouble() - 0.5, random.nextDouble() - 0.5, random.nextDouble() - 0.5)
-                    val position = state.getModelPos(world, pos).add(randomOffset.normalize().multiply(0.4))
-                    val direction = randomOffset.normalize().multiply(random.nextDouble(2.0..<10.0))
-
-                    world.addParticle(
-                        ParticleTypes.REVERSE_PORTAL,
-                        position.x,
-                        position.y,
-                        position.z,
-                        direction.x,
-                        direction.y,
-                        direction.z
-                    )
-                }
-                QuellType.THERMAL -> {
-                    val randomOffset = Vec3d(random.nextDouble() - 0.5, random.nextDouble() - 0.5, random.nextDouble() - 0.5)
-                    val position = state.getModelPos(world, pos).add(randomOffset.normalize().multiply(0.4))
-                    val direction = randomOffset.normalize().multiply(random.nextDouble(0.3..<0.7))
-
-                    world.addParticle(
-                        if (Random.nextDouble() < 0.4) ParticleTypes.FLAME else ParticleTypes.SMOKE,
-                        position.x,
-                        position.y,
-                        position.z,
-                        direction.x,
-                        direction.y,
-                        direction.z
-                    )
-                }
-                else -> { }
-            }
-        }
+        val point = state.getModelPos(world, pos)
+        world.doQuellExplosion(quellContent, point, 5.0)
     }
 
     override fun toUpdatePacket(): Packet<ClientPlayPacketListener> = BlockEntityUpdateS2CPacket.create(this)

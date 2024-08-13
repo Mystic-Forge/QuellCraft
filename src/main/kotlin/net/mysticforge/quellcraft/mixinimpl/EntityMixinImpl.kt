@@ -8,8 +8,8 @@ import net.mysticforge.quellcraft.item.TurboTreadsItem
 object EntityMixinImpl {
     @JvmStatic
     fun Entity.move(instance: Block, world: BlockView, entity: Entity) {
-        val turboTreadsStack = armorItems.firstOrNull { it.item is TurboTreadsItem } ?: return
-        if (!TurboTreadsItem.tryActivateTurboTreads(turboTreadsStack, this))
+        val turboTreadsStack = armorItems.firstOrNull { it.item is TurboTreadsItem }
+        if (turboTreadsStack == null || !TurboTreadsItem.tryActivateTurboTreads(turboTreadsStack, this))
             instance.onEntityLand(world, entity)
     }
 }

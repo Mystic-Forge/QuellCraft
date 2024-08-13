@@ -1,7 +1,10 @@
 package net.mysticforge.quellcraft.item
 
+import net.fabricmc.fabric.api.`object`.builder.v1.entity.FabricEntityTypeBuilder.Living
 import net.minecraft.client.item.TooltipContext
 import net.minecraft.entity.Entity
+import net.minecraft.entity.LivingEntity
+import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ArmorItem
 import net.minecraft.item.ArmorMaterial
 import net.minecraft.item.ItemStack
@@ -15,15 +18,16 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import net.mysticforge.quellcraft.QuellcraftConfig
 import net.mysticforge.quellcraft.quellmanagement.QuellContent
-import net.mysticforge.quellcraft.quellmanagement.QuellContent.Empty.storedThaum
-import net.mysticforge.quellcraft.quellmanagement.readQuellContent
-import net.mysticforge.quellcraft.quellmanagement.writeQuellContent
+import net.mysticforge.quellcraft.quellmanagement.doQuellExplosion
+import net.mysticforge.quellcraft.state.property.QuellType
 
 object TurboTreadsItem : ArmorItem(TurboTreadsArmorMaterial, Type.BOOTS, Settings().maxCount(1)) {
     private const val CHARGE_KEY = "quell_content"
 
     fun tryActivateTurboTreads(itemStack: ItemStack, entity: Entity): Boolean {
-        if(!entity.isSneaking || !entity.isOnGround) return false
+        if(!entity.isSneaking || !entity.isOnGround || entity.velocity.y > -0.2f) return false
+
+        if(entity is PlayerEntity && entity.abilities.flying) return false
 
         val nbt = itemStack.getOrCreateNbt()
         val storedThaum = nbt.getShort(CHARGE_KEY).toInt()
@@ -42,6 +46,11 @@ object TurboTreadsItem : ArmorItem(TurboTreadsArmorMaterial, Type.BOOTS, Setting
         val finalVelocity = Vec3d(horizontalBoost.x, if(horizontalBoosting) launchPower * 0.7 else launchPower, horizontalBoost.z)
 
         entity.velocity = finalVelocity
+
+        if(entity is LivingEntity) {
+            entity.damage(entity.damageSources.generic(), 3f)
+            entity.world.doQuellExplosion(QuellContent.Filled(QuellType.VOID, 20), entity.pos, 5.0)
+        }
         return true
     }
 
@@ -55,6 +64,14 @@ object TurboTreadsItem : ArmorItem(TurboTreadsArmorMaterial, Type.BOOTS, Setting
 
     override fun appendTooltip(stack: ItemStack, world: World?, tooltip: MutableList<Text>, context: TooltipContext) {
         val nbt = stack.getOrCreateNbt();
+        if(nbt.contains(CHARGE_KEY)) {
+            val charge = nbt.getShort(CHARGE_KEY).toInt()
+            tooltip.add(Text.of("Charge: ${(charge / QuellcraftConfig.turboTreadsChargeTime.toFloat() * 100).toInt()}%"))
+        }
+
+        tooltip.add(Text.of("Once charged, landing while sneaking"))
+        tooltip.add(Text.of("will cause a violent explosion beneath"))
+        tooltip.add(Text.of("you, sending you flying into the air!"))
     }
 }
 
