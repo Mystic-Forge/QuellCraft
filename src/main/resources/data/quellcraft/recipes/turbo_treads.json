@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "X",
+    "Y"
+  ],
+  "key": {
+    "X": {
+      "item": "minecraft:leather_boots"
+    },
+    "Y": {
+      "item": "quellcraft:spectrite_shard"
+    }
+  },
+  "result": {
+    "item": "quellcraft:turbo_treads"
+  }
+}
