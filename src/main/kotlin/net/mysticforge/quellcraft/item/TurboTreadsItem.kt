@@ -10,6 +10,7 @@ import net.minecraft.item.ArmorMaterial
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import net.minecraft.recipe.Ingredient
+import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvent
 import net.minecraft.sound.SoundEvents
 import net.minecraft.text.Text
@@ -58,6 +59,9 @@ object TurboTreadsItem : ArmorItem(TurboTreadsArmorMaterial, Type.BOOTS, Setting
         val nbt = itemStack.getOrCreateNbt()
         val currentCharge = nbt.getShort(CHARGE_KEY).toInt()
         if(currentCharge < QuellcraftConfig.turboTreadsChargeTime) {
+            if(currentCharge == QuellcraftConfig.turboTreadsChargeTime - 1) {
+                world.playSound(entity.x, entity.y, entity.z, SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 1f, 1f, false)
+            }
             nbt.putShort(CHARGE_KEY, (currentCharge + 1).toShort())
         }
     }

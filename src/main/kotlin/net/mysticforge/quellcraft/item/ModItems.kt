@@ -21,9 +21,11 @@ object ModItems {
 
     private val shards = QuellType.entries.map { it.typeName }.plus("spectrite").map { register(Item(Item.Settings()), "${it}_shard") }
 
-    private val depletedCrystalDust: Item = register(Item(Item.Settings()), "spectrite_dust")
-    private val mortarAndPestle: Item = register(Item(Item.Settings().maxCount(1)), "mortar_and_pestle")
     private val mistikTolis: Item = register(MistikTolisItem(Item.Settings()), "mistik_tolis")
+    private val springHammer: Item = register(SpringHammerItem, "spring_hammer")
+    private val depletedCrystalDust: Item = register(Item(Item.Settings()), "spectrite_dust")
+    private val spring: Item = register(Item(Item.Settings()), "spring")
+    private val mortarAndPestle: Item = register(Item(Item.Settings().maxCount(1)), "mortar_and_pestle")
     private val luckyNecklace: Item = register(LuckyCrystal, "lucky_crystal")
     private val turboTreads: Item = register(TurboTreadsItem, "turbo_treads")
 
@@ -36,9 +38,11 @@ object ModItems {
         // Register items to the custom item group.
         ItemGroupEvents.modifyEntriesEvent(customItemGroupKey).register { itemGroup ->
             itemGroup.add(mistikTolis)
+            itemGroup.add(springHammer)
             itemGroup.add(ModBlocks.crystalCluster.asItem())
             shards.forEach(itemGroup::add)
             itemGroup.add(depletedCrystalDust)
+            itemGroup.add(spring)
             itemGroup.add(mortarAndPestle)
             itemGroup.add(luckyNecklace)
             itemGroup.add(turboTreads)
