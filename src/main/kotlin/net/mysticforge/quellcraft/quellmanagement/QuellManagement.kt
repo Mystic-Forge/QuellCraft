@@ -1,5 +1,7 @@
 package net.mysticforge.quellcraft.quellmanagement
 
+import io.wispforest.accessories.api.AccessoriesCapability
+import io.wispforest.accessories.api.slot.SlotEntryReference
 import net.minecraft.entity.LivingEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.util.math.Box
@@ -18,7 +20,9 @@ fun World.emitQuell(quellContent: QuellContent, point: Vec3d, range: Double) {
         .filter { it.pos.subtract(point).lengthSquared() <= range * range }
 
     val quellAbsorbentItems = entities.flatMap {
-        it.itemsEquipped.mapNotNull { stack -> (stack.item as? QuellAbsorbentItem)?.let { QuellAbsorbentStack(stack, it) } }
+        var accessories = AccessoriesCapability.get(it)?.allEquipped
+        if(accessories == null) accessories = emptyList<SlotEntryReference>()
+        accessories.mapNotNull { capability -> (capability.stack.item as? QuellAbsorbentItem)?.let { item -> QuellAbsorbentStack(capability.stack, item) } }
     }
 
     val ratios = quellAbsorbentItems.map {

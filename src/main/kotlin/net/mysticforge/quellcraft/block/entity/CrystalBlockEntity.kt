@@ -44,6 +44,7 @@ class CrystalBlockEntity(blockPos: BlockPos, blockState: BlockState) :
 
     /**
      * Utility for getting the position of the visual model. This is useful since the model has random global offsets and 6 rotations
+     * @return The world position of the model
      */
     private fun BlockState.getModelPos(world: World, pos: BlockPos): Vec3d {
         val modelOffset = getModelOffset(world, pos)

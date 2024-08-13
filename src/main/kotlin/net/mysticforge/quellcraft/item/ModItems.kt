@@ -25,6 +25,7 @@ object ModItems {
     private val mortarAndPestle: Item = register(Item(Item.Settings().maxCount(1)), "mortar_and_pestle")
     private val mistikTolis: Item = register(MistikTolisItem(Item.Settings()), "mistik_tolis")
     private val luckyNecklace: Item = register(LuckyCrystal, "lucky_crystal")
+    private val turboTreads: Item = register(TurboTreadsItem, "turbo_treads")
 
     private fun register(item: Item, id: String) = Registry.register(Registries.ITEM, Identifier.of(Quellcraft.MOD_ID, id), item)
 
