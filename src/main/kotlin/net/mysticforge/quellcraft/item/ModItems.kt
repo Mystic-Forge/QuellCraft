@@ -16,8 +16,8 @@ import net.mysticforge.quellcraft.state.property.QuellType
 
 
 object ModItems {
-    val customItemGroupKey: RegistryKey<ItemGroup> = RegistryKey.of(Registries.ITEM_GROUP.key, Identifier.of(Quellcraft.MOD_ID, "quellcraft"))
-    val customItemGroup: ItemGroup = FabricItemGroup.builder().icon { ItemStack(mistikTolis) }.displayName(Text.translatable("itemGroup.quellcraft")).build()
+    private val customItemGroupKey: RegistryKey<ItemGroup> = RegistryKey.of(Registries.ITEM_GROUP.key, Identifier.of(Quellcraft.MOD_ID, "quellcraft"))
+    private val customItemGroup: ItemGroup = FabricItemGroup.builder().icon { ItemStack(mistikTolis) }.displayName(Text.translatable("itemGroup.quellcraft")).build()
 
     private val shards = QuellType.entries.map { it.typeName }.plus("spectrite").map { register(Item(Item.Settings()), "${it}_shard") }
 
@@ -41,6 +41,7 @@ object ModItems {
             itemGroup.add(depletedCrystalDust)
             itemGroup.add(mortarAndPestle)
             itemGroup.add(luckyNecklace)
+            itemGroup.add(turboTreads)
         }
     }
 }

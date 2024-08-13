@@ -4,6 +4,7 @@
   "package": "net.mysticforge.quellcraft.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "EntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

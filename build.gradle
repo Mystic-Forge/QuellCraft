@@ -12,12 +12,6 @@ base {
 }
 
 repositories {
-	// Trinkets
-//    maven {
-//        name = "TerraformersMC"
-//        url = uri("https://maven.terraformersmc.com/")
-//    }
-
 	// Accessories
 	maven { url 'https://maven.wispforest.io/releases' }
 
@@ -57,11 +51,8 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	modImplementation "net.fabricmc:fabric-language-kotlin:1.12.0+kotlin.2.0.10"
 
-	// Trinkets
-//    modImplementation("dev.emi:trinkets:${project.property("trinkets_version")}")
-
 	// Accessories
-	modImplementation("io.wispforest:accessories-fabric:${project.accessories_version}")
+	modImplementation "io.wispforest:accessories-fabric:${project.accessories_version}"
 
 	// CardinalComponents
 	modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cca_version}"
@@ -70,7 +61,9 @@ dependencies {
 	include "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cca_version}"
 
 	// ClothConfig
-	modApi "me.shedaniel.cloth:cloth-config-fabric:11.1.118"
+	modApi("me.shedaniel.cloth:cloth-config-fabric:11.1.118") {
+		exclude(group: "net.fabricmc.fabric-api")
+	}
 
 	// ModMenu
 	modApi "com.terraformersmc:modmenu:7.2.2"
