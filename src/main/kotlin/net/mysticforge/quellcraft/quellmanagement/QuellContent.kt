@@ -1,10 +1,13 @@
 package net.mysticforge.quellcraft.quellmanagement
 
 import net.minecraft.nbt.NbtCompound
+import net.minecraft.storage.ReadView
+import net.minecraft.storage.WriteView
 import net.mysticforge.quellcraft.quellmanagement.QuellContent.Empty
 import net.mysticforge.quellcraft.quellmanagement.QuellContent.Filled
 import net.mysticforge.quellcraft.state.property.QuellType
-import net.mysticforge.quellcraft.util.buildNbtCompound
+import net.mysticforge.quellcraft.util.createNbtCompound
+import net.mysticforge.quellcraft.util.modify
 
 sealed interface QuellContent {
     data object Empty : QuellContent {
@@ -29,7 +32,7 @@ sealed interface QuellContent {
             when (other) {
                 Empty -> return this
                 is Filled -> {
-                    require(quellType == other.quellType)
+                    require(quellType == other.quellType) { "Cannot combine QuellContent of different types: $quellType and ${other.quellType}" }
                     return this + other.storedThaum
                 }
             }
@@ -46,44 +49,43 @@ sealed interface QuellContent {
     }
 
     operator fun plus(other: QuellContent): QuellContent
-
 }
 
-fun NbtCompound.writeQuellContent(key: String, quellContent: QuellContent): NbtCompound {
-    put(
-        key,
-        buildNbtCompound {
-            put(
-                "quell_type",
-                when (quellContent) {
-                    Empty -> "empty"
-                    is Filled -> quellContent.quellType.typeName
+fun <WV : WriteView> WV.writeQuellContent(key: String, quellContent: QuellContent): WV =
+    modify {
+        put(
+            key,
+            NbtCompound.CODEC,
+            createNbtCompound {
+                put(
+                    "quell_type",
+                    when (quellContent) {
+                        Empty -> "empty"
+                        is Filled -> quellContent.quellType.asString()
+                    }
+                )
+
+                if (quellContent is Filled) {
+                    put("stored_thaum", quellContent.storedThaum)
                 }
-            )
-
-            if (quellContent is Filled) {
-                put("stored_thaum", quellContent.storedThaum)
             }
-        }
-    )
+        )
+    }.build()
 
-    return this
-}
-
-fun NbtCompound.readQuellContent(key: String): QuellContent =
-    with(getCompound(key)) {
+fun ReadView.readQuellContent(key: String): QuellContent =
+    with(getReadView(key)) {
         if (this == null) {
             return@with null
         }
 
-        when (val quellTypeName = getString("quell_type")) {
+        when (val quellTypeName = getString("quell_type", null)) {
             "empty" -> Empty
             else -> {
-                QuellType.entries.find { it.typeName == quellTypeName }?.let {
+                QuellType.entries.find { it.asString() == quellTypeName }?.let {
                     try {
                         Filled(
                             quellType = it,
-                            storedThaum = getInt("stored_thaum")
+                            storedThaum = getInt("stored_thaum", 0)
                         )
                     } catch (e: Throwable) {
                         null

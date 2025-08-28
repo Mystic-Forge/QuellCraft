@@ -1,11 +1,13 @@
 package net.mysticforge.quellcraft.components
 
-import dev.onyxstudios.cca.api.v3.component.ComponentV3
-import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent
-import dev.onyxstudios.cca.api.v3.component.tick.ServerTickingComponent
+import org.ladysnake.cca.api.v3.component.ComponentV3
+import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent
+import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.nbt.NbtCompound
+import net.minecraft.storage.ReadView
+import net.minecraft.storage.WriteView
 import net.mysticforge.quellcraft.ModStatusEffects
 import net.mysticforge.quellcraft.QuellcraftConfig
 
@@ -46,15 +48,15 @@ class EntityQuellInfusionComponent(private val entity: LivingEntity) : IntCompon
         setValue(infusionAmount + value)
     }
 
-    override fun readFromNbt(tag: NbtCompound) {
-        infusionAmount = tag.getInt(KEY)
-    }
-
-    override fun writeToNbt(tag: NbtCompound) {
-        tag.putInt(KEY, infusionAmount)
-    }
-
     override fun serverTick() {
         if (infusionAmount > 0 && entity.random.nextFloat() < QuellcraftConfig.quellInfusionDecay) setValue(infusionAmount - 1)
+    }
+
+    override fun readData(p0: ReadView) {
+        infusionAmount = p0.getInt(KEY, 0)
+    }
+
+    override fun writeData(p0: WriteView) {
+        p0.putInt(KEY, infusionAmount)
     }
 }

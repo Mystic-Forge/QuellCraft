@@ -1,8 +1,8 @@
 #version 150
 
+#moj_import <minecraft:globals.glsl>
+
 uniform sampler2D Sampler0;
-//uniform sampler2D Sampler1;
-uniform float GameTime;
 
 in vec2 texCoord0;
 in vec4 vertexColor;

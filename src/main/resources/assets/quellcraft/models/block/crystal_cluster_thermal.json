@@ -1,0 +1,7 @@
+{
+  "parent": "quellcraft:block/crystal_cluster",
+    "textures": {
+        "2": "quellcraft:block/thermal_cluster",
+        "particle": "quellcraft:block/thermal_cluster"
+    }
+}

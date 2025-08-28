@@ -1,0 +1,11 @@
+{
+  "type": "quellcraft:quell_space",
+  "generator": {
+    "type": "minecraft:noise",
+    "settings": "quellcraft:quell_space",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "quellcraft:quell_space"
+    }
+  }
+}

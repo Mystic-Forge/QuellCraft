@@ -1,57 +1,62 @@
 package net.mysticforge.quellcraft.client.screens
 
-import com.mojang.blaze3d.systems.RenderSystem
-import net.fabricmc.fabric.impl.client.rendering.FabricShaderProgram
-import net.minecraft.client.MinecraftClient
+import net.minecraft.client.gl.RenderPipelines
 import net.minecraft.client.gui.DrawContext
 import net.minecraft.client.gui.screen.Screen
-import net.minecraft.client.gui.widget.ButtonWidget
-import net.minecraft.client.render.BufferRenderer
-import net.minecraft.client.render.Tessellator
-import net.minecraft.client.render.VertexFormat
-import net.minecraft.client.render.VertexFormats
-import net.minecraft.client.toast.SystemToast
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
-import org.joml.Matrix4f
+import org.joml.Vector2i
+import org.joml.Vector4i
 
-object MistikTolisScreen: Screen(Text.of("Mistik Tolis")) {
-    var shader = FabricShaderProgram(MinecraftClient.getInstance().resourceManager, Identifier.of("minecraft", "mistik_tolis_background"), VertexFormats.POSITION_TEXTURE)
+object MistikTolisScreen : Screen(Text.of("Mistik Tolis")) {
+//    var shader = FabricShaderProgram(MinecraftClient.getInstance().resourceManager, Identifier.of("minecraft", "mistik_tolis_background"), VertexFormats.POSITION_TEXTURE)
 
     override fun init() {
-        val buttonWidget = ButtonWidget.builder(Text.of("Hello World")) {
-            client!!.toastManager.add(
-                SystemToast.create(this.client, SystemToast.Type.NARRATOR_TOGGLE, Text.of("Hello World!"), Text.of("This is a toast."))
-            )
-        }.dimensions(40, 40, 120, 20).build()
-
-        // Register the button widget.
-        addDrawableChild(buttonWidget)
+//        val buttonWidget = ButtonWidget.builder(Text.of("Hello World")) {
+//            client!!.toastManager.add(
+//                SystemToast.create(this.client, SystemToast.Type.NARRATOR_TOGGLE, Text.of("Hello World!"), Text.of("This is a toast."))
+//            )
+//        }.dimensions(40, 40, 120, 20).build()
+//
+//        // Register the button widget.
+//        addDrawableChild(buttonWidget)
     }
 
     override fun render(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float) {
-        renderBackground(context) // Tint the background.
         super.render(context, mouseX, mouseY, delta)
 
-        context.drawText(this.textRenderer, "Special Button", 40, 40 - textRenderer.fontHeight - 10, -0x1, true)
-
-        val transformationMatrix: Matrix4f = context.matrices.peek().positionMatrix
-        val tessellator = Tessellator.getInstance()
-
-        val buffer = tessellator.buffer
-        buffer.begin(VertexFormat.DrawMode.TRIANGLES, VertexFormats.POSITION_TEXTURE)
-
-        buffer.vertex(transformationMatrix, 0f, 0f, 5f).texture(0f, 0f).next()
-        buffer.vertex(transformationMatrix, 0f, 40f, 5f).texture(0f, 1f).next()
-        buffer.vertex(transformationMatrix, 40f, 0f, 5f).texture(1f, 0f).next()
-
-        buffer.vertex(transformationMatrix, 0f, 40f, 5f).texture(0f, 1f).next()
-        buffer.vertex(transformationMatrix, 40f, 40f, 5f).texture(1f, 1f).next()
-        buffer.vertex(transformationMatrix, 40f, 0f, 5f).texture(1f, 0f).next()
-
-        RenderSystem.setShader { FabricShaderProgram(MinecraftClient.getInstance().resourceManager, Identifier.of("minecraft", "mistik_tolis_background"), VertexFormats.POSITION_TEXTURE) }
-
-        BufferRenderer.drawWithGlobalProgram(buffer.end())
+//        context.drawText(this.textRenderer, "Special Button", 40, 40 - textRenderer.fontHeight - 10, -0x1, true)
+        val mistikTolisResolution = Vector2i(332, 242)
+        val borderPadding = 16;
+        val marginX = context.scaledWindowWidth / 2 - 332 / 2
+        val marginY = context.scaledWindowHeight / 2 - 242 / 2
+        val leftPageRegion = Vector4i(marginX + borderPadding, marginY + borderPadding, marginX + mistikTolisResolution.x / 2 - borderPadding, marginY + mistikTolisResolution.y - borderPadding)
+        context.drawTexture(RenderPipelines.GUI_TEXTURED,
+            Identifier.of("quellcraft", "textures/gui/mistik_tolis_border.png"),
+            marginX,
+            marginY,
+            0f,
+            0f,
+            mistikTolisResolution.x,
+            mistikTolisResolution.y,
+            332,
+            242
+        )
+        context.drawTexture(
+            RenderPipelines.GUI_TEXTURED,
+            Identifier.of("quellcraft", "textures/gui/mistik_tolis_pages.png"),
+            marginX,
+            marginY,
+            0f,
+            0f,
+            mistikTolisResolution.x,
+            mistikTolisResolution.y,
+            332,
+            242
+        )
+        context.enableScissor(leftPageRegion.x, leftPageRegion.y, leftPageRegion.z, leftPageRegion.w)
+        context.drawText(textRenderer, "Mistik Tolis", leftPageRegion.x, leftPageRegion.y, -0x1, false)
+        context.disableScissor()
     }
 
     override fun shouldPause() = false

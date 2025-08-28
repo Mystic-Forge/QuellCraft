@@ -1,7 +1,8 @@
 {
   "itemGroup.quellcraft": "QuellCraft",
 
-  "block.quellcraft.crystal_cluster": "Crystal Cluster",
+  "item.quellcraft.crystal_cluster": "Crystal Cluster",
+  "item.quellcraft.quell": "Quell",
 
   "item.quellcraft.mistik_tolis": "Mistik Tolis",
   "item.quellcraft.spring_hammer": "Spring Hammer",
@@ -14,6 +15,7 @@
   "item.quellcraft.spectrite_shard": "Spectrite Shard",
   "item.quellcraft.void_shard": "Void Shard",
   "item.quellcraft.thermal_shard": "Thermal Shard",
+  "item.quellcraft.life_shard": "Life Shard",
 
   "effect.quellcraft.distorted": "Distorted",
 

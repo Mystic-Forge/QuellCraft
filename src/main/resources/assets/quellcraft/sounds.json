@@ -1,0 +1,9 @@
+{
+  "spring_hammer_hit": {
+    "sounds": [
+      "quellcraft:spring_hammer_hit_1",
+      "quellcraft:spring_hammer_hit_2",
+      "quellcraft:spring_hammer_hit_3"
+    ]
+  }
+}

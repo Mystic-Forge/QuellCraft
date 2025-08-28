@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": "minecraft:iron_ingot",
+    "Y": "quellcraft:spring",
+    "Z": "minecraft:stick"
+  },
+  "pattern": [
+    "X",
+    "Y",
+    "Z"
+  ],
+  "result": {
+    "id": "quellcraft:spring_hammer"
+  }
+}

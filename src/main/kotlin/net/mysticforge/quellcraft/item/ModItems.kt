@@ -19,17 +19,28 @@ object ModItems {
     private val customItemGroupKey: RegistryKey<ItemGroup> = RegistryKey.of(Registries.ITEM_GROUP.key, Identifier.of(Quellcraft.MOD_ID, "quellcraft"))
     private val customItemGroup: ItemGroup = FabricItemGroup.builder().icon { ItemStack(mistikTolis) }.displayName(Text.translatable("itemGroup.quellcraft")).build()
 
-    private val shards = QuellType.entries.map { it.typeName }.plus("spectrite").map { register(Item(Item.Settings()), "${it}_shard") }
+    private val shards = QuellType.entries.map { it.asString() }.plus("spectrite").map { register(::Item, "${it}_shard") }
 
-    private val mistikTolis: Item = register(MistikTolisItem(Item.Settings()), "mistik_tolis")
-    private val springHammer: Item = register(SpringHammerItem, "spring_hammer")
-    private val depletedCrystalDust: Item = register(Item(Item.Settings()), "spectrite_dust")
-    private val spring: Item = register(Item(Item.Settings()), "spring")
-    private val mortarAndPestle: Item = register(Item(Item.Settings().maxCount(1)), "mortar_and_pestle")
-    private val luckyNecklace: Item = register(LuckyCrystal, "lucky_crystal")
-    private val turboTreads: Item = register(TurboTreadsItem, "turbo_treads")
+    private val mistikTolis: Item = register(::MistikTolisItem, "mistik_tolis")
+    private val springHammer: Item = register(::SpringHammerItem, "spring_hammer")
+    private val spectriteDust: Item = register(::Item, "spectrite_dust")
+    private val spring: Item = register(::Item, "spring")
+    private val mortarAndPestle: Item = register(::Item, QuellcraftItem.QuellcraftItemSettings().maxCount(1), "mortar_and_pestle")
+    private val luckyCrystal: Item = register(::LuckyCrystal, "lucky_crystal")
+    private val turboTreads: Item = register(::TurboTreadsItem, "turbo_treads")
 
-    private fun register(item: Item, id: String) = Registry.register(Registries.ITEM, Identifier.of(Quellcraft.MOD_ID, id), item)
+    private fun register(itemFactory: (settings: QuellcraftItem.QuellcraftItemSettings) -> Item, id: String): Item {
+        val settings = QuellcraftItem.QuellcraftItemSettings()
+        return register(itemFactory, settings, id)
+    }
+
+    private fun register(itemFactory: (settings: QuellcraftItem.QuellcraftItemSettings) -> Item, settings: QuellcraftItem.QuellcraftItemSettings, id: String): Item {
+        val id = Identifier.of(Quellcraft.MOD_ID, id)
+        settings.registryKey(RegistryKey.of(Registries.ITEM.key, id))
+        val item = itemFactory(settings)
+        Registry.register(Registries.ITEM, id, item)
+        return item
+    }
 
     init {
         // Register the group.
@@ -41,10 +52,10 @@ object ModItems {
             itemGroup.add(springHammer)
             itemGroup.add(ModBlocks.crystalCluster.asItem())
             shards.forEach(itemGroup::add)
-            itemGroup.add(depletedCrystalDust)
+            itemGroup.add(spectriteDust)
             itemGroup.add(spring)
             itemGroup.add(mortarAndPestle)
-            itemGroup.add(luckyNecklace)
+            itemGroup.add(luckyCrystal)
             itemGroup.add(turboTreads)
         }
     }

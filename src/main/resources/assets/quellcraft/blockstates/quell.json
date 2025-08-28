@@ -1,0 +1,55 @@
+{
+  "variants": {
+    "quell_level=0": [
+      {
+        "model": "quellcraft:block/quell_0"
+      },
+      {
+        "model": "quellcraft:block/quell_0",
+        "y": 90
+      },
+      {
+        "model": "quellcraft:block/quell_0",
+        "y": 180
+      },
+      {
+        "model": "quellcraft:block/quell_0",
+        "y": 270
+      }
+    ],
+    "quell_level=1": [
+      {
+        "model": "quellcraft:block/quell_1"
+      },
+      {
+        "model": "quellcraft:block/quell_1",
+        "y": 90
+      },
+      {
+        "model": "quellcraft:block/quell_1",
+        "y": 180
+      },
+      {
+        "model": "quellcraft:block/quell_1",
+        "y": 270
+      }
+    ],
+    "quell_level=2": [
+      {
+        "model": "quellcraft:block/quell_2"
+      },
+      {
+        "model": "quellcraft:block/quell_2",
+        "y": 90
+      },
+      {
+        "model": "quellcraft:block/quell_2",
+        "y": 180
+      },
+      {
+        "model": "quellcraft:block/quell_2",
+        "y": 270
+      }
+    ]
+  }
+}

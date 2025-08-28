@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": "minecraft:stick",
+    "Y": "minecraft:bowl"
+  },
+  "pattern": [
+    "X",
+    "Y"
+  ],
+  "result": {
+    "id": "quellcraft:mortar_and_pestle"
+  }
+}

@@ -12,7 +12,7 @@
   "entrypoints": {
     "client": [
       {
-        "value": "net.mysticforge.quellcraft.client.QuellcraftClient",
+        "value": "net.mysticforge.quellcraft.client.QuellCraftClient",
         "adapter": "kotlin"
       }
     ],
@@ -37,10 +37,10 @@
     }
   ],
   "depends": {
-    "fabricloader": ">=0.15.11",
+    "fabricloader": ">=0.17.2",
     "fabric-language-kotlin": "*",
     "fabric": "*",
-    "minecraft": "~1.20.1"
+    "minecraft": "~1.21"
   },
   "custom": {
     "cardinal-components": [

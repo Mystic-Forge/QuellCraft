@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "X": "minecraft:leather_boots",
+    "Y": "quellcraft:void_shard"
+  },
+  "pattern": [
+    "X",
+    "Y"
+  ],
+  "result": {
+    "id": "quellcraft:turbo_treads"
+  }
+}

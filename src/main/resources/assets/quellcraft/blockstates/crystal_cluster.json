@@ -1,30 +1,255 @@
 {
-  "variants": {
-    "facing=down": {
-      "model": "quellcraft:block/crystal_cluster",
-      "x": 180
+  "multipart": [
+    {
+      "when": {
+        "facing": "down",
+        "quell_type": "null"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster",
+        "x": 180
+      }
     },
-    "facing=east": {
-      "model": "quellcraft:block/crystal_cluster",
-      "x": 90,
-      "y": 90
+    {
+      "when": {
+        "facing": "east",
+        "quell_type": "null"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster",
+        "x": 90,
+        "y": 90
+      }
     },
-    "facing=north": {
-      "model": "quellcraft:block/crystal_cluster",
-      "x": 90
+    {
+      "when": {
+        "facing": "north",
+        "quell_type": "null"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster",
+        "x": 90
+      }
     },
-    "facing=south": {
-      "model": "quellcraft:block/crystal_cluster",
-      "x": 90,
-      "y": 180
+    {
+      "when": {
+        "facing": "south",
+        "quell_type": "null"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster",
+        "x": 90,
+        "y": 180
+      }
     },
-    "facing=up": {
-      "model": "quellcraft:block/crystal_cluster"
+    {
+      "when": {
+        "facing": "up",
+        "quell_type": "null"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster"
+      }
     },
-    "facing=west": {
-      "model": "quellcraft:block/crystal_cluster",
-      "x": 90,
-      "y": 270
+    {
+      "when": {
+        "facing": "west",
+        "quell_type": "null"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster",
+        "x": 90,
+        "y": 270
+      }
+    },
+
+    {
+      "when": {
+        "facing": "down",
+        "quell_type": "thermal"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster_thermal",
+        "x": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "quell_type": "thermal"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster_thermal",
+        "x": 90,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "quell_type": "thermal"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster_thermal",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "quell_type": "thermal"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster_thermal",
+        "x": 90,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "up",
+        "quell_type": "thermal"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster_thermal"
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "quell_type": "thermal"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster_thermal",
+        "x": 90,
+        "y": 270
+      }
+    },
+
+    {
+      "when": {
+        "facing": "down",
+        "quell_type": "void"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster_void",
+        "x": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "quell_type": "void"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster_void",
+        "x": 90,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "quell_type": "void"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster_void",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "quell_type": "void"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster_void",
+        "x": 90,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "up",
+        "quell_type": "void"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster_void"
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "quell_type": "void"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster_void",
+        "x": 90,
+        "y": 270
+      }
+    },
+
+    {
+      "when": {
+        "facing": "down",
+        "quell_type": "life"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster_life",
+        "x": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "quell_type": "life"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster_life",
+        "x": 90,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "quell_type": "life"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster_life",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "quell_type": "life"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster_life",
+        "x": 90,
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "up",
+        "quell_type": "life"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster_life"
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "quell_type": "life"
+      },
+      "apply": {
+        "model": "quellcraft:block/crystal_cluster_life",
+        "x": 90,
+        "y": 270
+      }
     }
-  }
+  ]
 }

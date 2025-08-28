@@ -27,7 +27,7 @@ fun World.emitQuell(quellContent: QuellContent, point: Vec3d, range: Double) {
 
     val quellAbsorbentItems = entities.flatMap {
         var accessories = AccessoriesCapability.get(it)?.allEquipped
-        if(accessories == null) accessories = emptyList<SlotEntryReference>()
+        if (accessories == null) accessories = emptyList<SlotEntryReference>()
         accessories.mapNotNull { capability -> (capability.stack.item as? QuellAbsorbentItem)?.let { item -> QuellAbsorbentStack(capability.stack, item) } }
     }
 
@@ -44,7 +44,7 @@ fun World.emitQuell(quellContent: QuellContent, point: Vec3d, range: Double) {
     val totalWeight = ratios.sum()
     for ((ratio, absorbentStack) in ratios.zip(quellAbsorbentItems)) {
         val amount = floor(absorbed * (ratio / totalWeight)).toInt()
-        if(amount == 0) continue
+        if (amount == 0) continue
         absorbentStack.item.doAbsorbQuell(absorbentStack.stack, QuellContent.Filled(quellContent.quellType, amount))
     }
 
@@ -56,13 +56,13 @@ fun World.emitQuell(quellContent: QuellContent, point: Vec3d, range: Double) {
 fun World.doQuellExplosion(quellContent: QuellContent, point: Vec3d, range: Double) {
     if (quellContent !is QuellContent.Filled) return
 
-    for (i in 0..<(20 * quellContent.storedThaum).coerceAtMost(10000)) {
-        when ((quellContent as? QuellContent.Filled)?.quellType) {
-            QuellType.VOID -> {
+    when ((quellContent).quellType) {
+        QuellType.Void -> {
+            for (i in 0..<(20 * quellContent.storedThaum).coerceAtMost(10000)) {
                 val randomOffset = Vec3d(random.nextDouble() - 0.5, random.nextDouble() - 0.5, random.nextDouble() - 0.5)
                 val direction = randomOffset.normalize().multiply(random.nextDouble(0.5..<range))
-                val position = point.add(randomOffset.normalize().multiply(0.4))
-                addParticle(
+                val position = point.add(randomOffset.normalize().multiply(random.nextDouble(0.2..<.5)))
+                addParticleClient(
                     ParticleTypes.REVERSE_PORTAL,
                     position.x,
                     position.y,
@@ -72,12 +72,17 @@ fun World.doQuellExplosion(quellContent: QuellContent, point: Vec3d, range: Doub
                     direction.z
                 )
             }
-            QuellType.THERMAL -> {
+
+            playSoundClient(point.x, point.y, point.z, SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1.0f, 1.0f, true)
+        }
+
+        QuellType.Thermal -> {
+            for (i in 0..<(20 * quellContent.storedThaum).coerceAtMost(10000)) {
                 val randomOffset = Vec3d(random.nextDouble() - 0.5, random.nextDouble() - 0.5, random.nextDouble() - 0.5)
                 val position = point.add(randomOffset.normalize().multiply(0.4))
                 val direction = randomOffset.normalize().multiply(random.nextDouble(0.0..<range * 0.15))
 
-                addParticle(
+                addParticleClient(
                     if (Random.nextDouble() < 0.4) ParticleTypes.FLAME else ParticleTypes.SMOKE,
                     position.x,
                     position.y,
@@ -87,9 +92,28 @@ fun World.doQuellExplosion(quellContent: QuellContent, point: Vec3d, range: Doub
                     direction.z
                 )
             }
-            else -> { }
+
+            playSoundClient(point.x, point.y, point.z, SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.PLAYERS, 1.0f, 1.0f, true)
+        }
+
+        QuellType.Life -> {
+            for (i in 0..<(20 * quellContent.storedThaum).coerceAtMost(10000)) {
+                val randomOffset = Vec3d(random.nextDouble() - 0.5, random.nextDouble() - 0.5, random.nextDouble() - 0.5)
+                val position = point.add(randomOffset.normalize().multiply(random.nextDouble(0.0..<range)))
+                val direction = randomOffset.normalize().multiply(random.nextDouble(0.0..<range))
+
+                addParticleClient(
+                    ParticleTypes.HAPPY_VILLAGER,
+                    position.x,
+                    position.y,
+                    position.z,
+                    direction.x,
+                    direction.y,
+                    direction.z
+                )
+            }
+
+            playSoundClient(point.x, point.y, point.z, SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 0.2f, 1.0f, true)
         }
     }
-
-    playSound(point.x, point.y, point.z, SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.PLAYERS, 1.0f, 1.0f, true)
 }
