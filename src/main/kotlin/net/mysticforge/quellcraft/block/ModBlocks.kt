@@ -4,7 +4,10 @@ import net.fabricmc.fabric.api.`object`.builder.v1.block.entity.FabricBlockEntit
 import net.fabricmc.fabric.api.`object`.builder.v1.block.entity.FabricBlockEntityTypeBuilder
 import net.minecraft.block.AbstractBlock
 import net.minecraft.block.Block
+import net.minecraft.block.BlockState
+import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityType
+import net.minecraft.command.argument.BlockPosArgumentType.blockPos
 import net.minecraft.command.argument.RegistryKeyArgumentType.registryKey
 import net.minecraft.item.BlockItem
 import net.minecraft.item.Item
@@ -13,18 +16,18 @@ import net.minecraft.registry.Registry
 import net.minecraft.registry.RegistryKey
 import net.minecraft.registry.RegistryKeys
 import net.minecraft.util.Identifier
+import net.minecraft.util.math.BlockPos
 import net.mysticforge.quellcraft.Quellcraft
 import net.mysticforge.quellcraft.block.entity.CrystalBlockEntity
+import net.mysticforge.quellcraft.block.entity.ThaumicAssemblerEntity
 
 object ModBlocks {
+    val thaumicAssembler = register(::ThaumicAssembler, "thaumic_assembler")
     val quellBlock = register(::QuellBlock, "quell")
     val crystalCluster = register(::CrystalBlock, "crystal_cluster")
 
-    val crystalBlockEntityType: BlockEntityType<CrystalBlockEntity> = Registry.register(
-        Registries.BLOCK_ENTITY_TYPE,
-        Identifier.of(Quellcraft.MOD_ID, "crystal_block_entity"),
-        FabricBlockEntityTypeBuilder.create({ blockPos, blockState -> CrystalBlockEntity(blockPos, blockState) }, crystalCluster).build()
-    )
+    val crystalBlockEntityType = registerBlockEntity("crystal_block_entity", ::CrystalBlockEntity, crystalCluster)
+    val thaumicAssemblerEntityType = registerBlockEntity("thaumic_assembler_entity", ::ThaumicAssemblerEntity, thaumicAssembler)
 
     private fun register(blockFactory: (settings: AbstractBlock.Settings) -> Block, name: String, shouldRegisterItem: Boolean = true): Block {
         val id = Identifier.of(Quellcraft.MOD_ID, name)
@@ -38,5 +41,13 @@ object ModBlocks {
         }
 
         return Registry.register(Registries.BLOCK, id, block)
+    }
+
+    private fun <T : BlockEntity>registerBlockEntity(name: String, entityFactory: (blockPos: BlockPos, blockState: BlockState) -> T, vararg blocks: Block) : BlockEntityType<T> {
+        return Registry.register(
+            Registries.BLOCK_ENTITY_TYPE,
+            Identifier.of(Quellcraft.MOD_ID, name),
+            FabricBlockEntityTypeBuilder.create(entityFactory, *blocks).build()
+        )
     }
 }

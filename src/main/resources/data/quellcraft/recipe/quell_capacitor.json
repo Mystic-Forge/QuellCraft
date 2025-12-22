@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "quellcraft:spectrite_shard",
+    "quellcraft:spring"
+  ],
+  "result": {
+    "id": "quellcraft:quell_capacitor"
+  }
+}

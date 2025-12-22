@@ -11,12 +11,16 @@ import net.minecraft.client.gl.RenderPipelines.GLOBALS_SNIPPET
 import net.minecraft.client.gl.RenderPipelines.TRANSFORMS_AND_PROJECTION_SNIPPET
 import net.minecraft.client.gl.UniformType
 import net.minecraft.client.gui.DrawContext
+import net.minecraft.client.gui.screen.ingame.HandledScreens
 import net.minecraft.client.render.RenderTickCounter
 import net.minecraft.client.render.VertexFormats
 import net.minecraft.util.Identifier
 import net.mysticforge.quellcraft.ModStatusEffects
 import net.mysticforge.quellcraft.Quellcraft
+import net.mysticforge.quellcraft.block.ModBlocks
 import net.mysticforge.quellcraft.client.networking.PacketReceiver
+import net.mysticforge.quellcraft.client.screens.ThaumicAssemblerScreen
+import net.mysticforge.quellcraft.screenhandler.ModScreenHandlers
 import org.joml.Math
 
 
@@ -37,6 +41,7 @@ object QuellCraftClient : ClientModInitializer {
 
     override fun onInitializeClient() {
         PacketReceiver
+        HandledScreens.register(ModScreenHandlers.THAUMIC_ASSEMBLER_SCREEN_HANDLER_TYPE, ::ThaumicAssemblerScreen)
 //        ModelLoadingPlugin.register(QuellcraftModelLoadingPlugin)
     }
 
