@@ -17,6 +17,7 @@ import net.mysticforge.quellcraft.screenhandler.ThaumicAssemblerScreenHandler
 
 class ThaumicAssemblerEntity(blockPos: BlockPos, blockState: BlockState)
     : BlockEntity(ModBlocks.thaumicAssemblerEntityType, blockPos, blockState), NamedScreenHandlerFactory, ImplementedInventory {
+    private val inventory: DefaultedList<ItemStack?> = DefaultedList.ofSize<ItemStack?>(28, ItemStack.EMPTY)
 
     override fun getItems(): DefaultedList<ItemStack?> = inventory
 
@@ -29,8 +30,4 @@ class ThaumicAssemblerEntity(blockPos: BlockPos, blockState: BlockState)
         playerInventory: PlayerInventory,
         player: PlayerEntity
     ): ScreenHandler = ThaumicAssemblerScreenHandler(syncId, playerInventory, this)
-
-    companion object {
-        private val inventory: DefaultedList<ItemStack?> = DefaultedList.ofSize<ItemStack?>(28, ItemStack.EMPTY)
-    }
 }
