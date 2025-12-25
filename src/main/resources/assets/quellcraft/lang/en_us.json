@@ -14,13 +14,17 @@
   "item.quellcraft.lucky_crystal": "Lucky Crystal",
   "item.quellcraft.turbo_treads": "Turbo Treads",
   "item.quellcraft.thaumic_drill": "Thaumic Drill",
+  "item.quellcraft.thaumic_assembler": "Thaumic Assembler",
+  "item.quellcraft.project_desk": "Project Desk",
 
   "item.quellcraft.spectrite_shard": "Spectrite Shard",
   "item.quellcraft.void_shard": "Void Shard",
   "item.quellcraft.thermal_shard": "Thermal Shard",
   "item.quellcraft.life_shard": "Life Shard",
 
-  "block.quellcraft.thaumic_assembler": "Thaumic Assembler",
+  "item.quellcraft.sorcerer_hat": "Sorcerer Hat",
+
+  "block.quellcraft.project_desk": "Project Desk",
 
   "effect.quellcraft.distorted": "Distorted",
 

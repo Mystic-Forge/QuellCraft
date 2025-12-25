@@ -1,9 +1,198 @@
 {
-  "variants": {
-    "": [
-      {
-        "model": "quellcraft:block/thaumic_assembler"
+  "multipart": [
+    {
+      "apply": {
+        "model": "quellcraft:block/thaumic_assembler_jaw"
       }
-    ]
-  }
+    },
+    {
+      "apply": {
+        "model": "quellcraft:block/thaumic_assembler_1",
+        "y": 270
+      },
+      "when": {
+        "north": true,
+        "east": false,
+        "south": false,
+        "west": false
+      }
+    },
+    {
+      "apply": {
+        "model": "quellcraft:block/thaumic_assembler_1",
+        "y": 0
+      },
+      "when": {
+        "north": false,
+        "east": true,
+        "south": false,
+        "west": false
+      }
+    },
+    {
+      "apply": {
+        "model": "quellcraft:block/thaumic_assembler_1",
+        "y": 90
+      },
+      "when": {
+        "north": false,
+        "east": false,
+        "south": true,
+        "west": false
+      }
+    },
+    {
+        "apply": {
+            "model": "quellcraft:block/thaumic_assembler_1",
+            "y": 180
+        },
+        "when": {
+            "north": false,
+            "east": false,
+            "south": false,
+            "west": true
+        }
+    },
+    {
+      "apply": {
+        "model": "quellcraft:block/thaumic_assembler_2",
+        "y": 270
+      },
+        "when": {
+            "north": true,
+            "east": true,
+            "south": false,
+            "west": false
+        }
+    },
+    {
+      "apply": {
+        "model": "quellcraft:block/thaumic_assembler_2",
+        "y": 0
+      },
+        "when": {
+            "north": false,
+            "east": true,
+            "south": true,
+            "west": false
+        }
+    },
+    {
+      "apply": {
+        "model": "quellcraft:block/thaumic_assembler_2",
+        "y": 90
+      },
+        "when": {
+            "north": false,
+            "east": false,
+            "south": true,
+            "west": true
+        }
+    },
+    {
+      "apply": {
+        "model": "quellcraft:block/thaumic_assembler_2",
+        "y": 180
+      },
+        "when": {
+            "north": true,
+            "east": false,
+            "south": false,
+            "west": true
+        }
+    },
+    {
+      "apply": {
+        "model": "quellcraft:block/thaumic_assembler_3",
+        "y": 0
+      },
+        "when": {
+            "north": true,
+            "east": false,
+            "south": true,
+            "west": false
+        }
+    },
+    {
+      "apply": {
+        "model": "quellcraft:block/thaumic_assembler_3",
+        "y": 90
+      },
+        "when": {
+            "north": false,
+            "east": true,
+            "south": false,
+            "west": true
+        }
+    },
+    {
+      "apply": {
+        "model": "quellcraft:block/thaumic_assembler_4",
+        "y": 180
+      },
+        "when": {
+            "north": true,
+            "east": true,
+            "south": false,
+            "west": true
+        }
+    },
+    {
+      "apply": {
+        "model": "quellcraft:block/thaumic_assembler_4",
+        "y": 270
+      },
+        "when": {
+            "north": true,
+            "east": false,
+            "south": true,
+            "west": true
+        }
+    },
+    {
+      "apply": {
+        "model": "quellcraft:block/thaumic_assembler_4"
+      },
+        "when": {
+            "north": false,
+            "east": true,
+            "south": true,
+            "west": true
+        }
+    },
+    {
+      "apply": {
+        "model": "quellcraft:block/thaumic_assembler_4",
+        "y": 90
+      },
+        "when": {
+            "north": true,
+            "east": true,
+            "south": true,
+            "west": false
+        }
+    },
+    {
+      "apply": {
+        "model": "quellcraft:block/thaumic_assembler_4"
+      },
+        "when": {
+            "north": true,
+            "east": true,
+            "south": true,
+            "west": true
+        }
+    },
+    {
+      "apply": {
+        "model": "quellcraft:block/thaumic_assembler"
+      },
+      "when": {
+        "north": false,
+        "east": false,
+        "south": false,
+        "west": false
+      }
+    }
+  ]
 }

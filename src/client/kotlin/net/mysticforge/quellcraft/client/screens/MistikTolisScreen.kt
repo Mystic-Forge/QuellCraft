@@ -59,5 +59,5 @@ object MistikTolisScreen : Screen(Text.of("Mistik Tolis")) {
         context.disableScissor()
     }
 
-    override fun shouldPause() = false
+//    override fun shouldPause() = false
 }

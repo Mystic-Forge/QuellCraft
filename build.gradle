@@ -29,6 +29,19 @@ repositories {
 
 	// ModMenu
 	maven { url 'https://maven.terraformersmc.com/releases/' }
+
+    // Geckolib5
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'GeckoLib'
+                url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+            }
+        }
+        filter {
+            includeGroup('software.bernie.geckolib')
+        }
+    }
 }
 
 loom {
@@ -68,6 +81,9 @@ dependencies {
 
 	// ModMenu
     modApi "com.terraformersmc:modmenu:15.0.0-beta.3"
+
+    // Geckolib5
+    modImplementation "software.bernie.geckolib:geckolib-fabric-${minecraft_version}:${geckolib_version}"
 }
 
 processResources {

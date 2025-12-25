@@ -17,6 +17,7 @@ class QuellBlock(settings: Settings) : Block(settings.sounds(BlockSoundGroup.MUD
         )
     }
 
+
     fun trySpread(state: BlockState, world: ServerWorld, pos: BlockPos, direction: Direction, attemptsLeft: Int = 4, random: Random) {
         var thisLevel = state.get(quellLevel)
 

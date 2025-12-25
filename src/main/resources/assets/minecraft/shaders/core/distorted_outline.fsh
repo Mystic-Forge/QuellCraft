@@ -36,7 +36,7 @@ void main() {
 
     float dist = length(0.5 - uv.xy);
 
-    const float scrollSpeed = 80.0;
+    const float scrollSpeed = 60.0;
     float offset = GameTime * scrollSpeed;
 
     vec4 noise1 = texture(Sampler0, uv + vec2(offset, offset));
@@ -52,6 +52,10 @@ void main() {
     }
 
     const float edgeSize = 0.05;
-    fragColor = result > (threshold + edgeSize) ? vec4(0.0, 0.0, 0.0, 1.0) : vec4(0.56, 0.0, 0.7, 1.0);
+    vec3 finalColor = vec3(0.0);
+    finalColor = mix(vec3(0.15f, 0.07f, 0.27f), finalColor, step(threshold + edgeSize * 5, result));
+    finalColor = mix(vec3(0.76f, 0.3f, 0.78f), finalColor, step(threshold + edgeSize * 2, result));
+    finalColor = mix(vec3(0.93f, 0.73f, 0.4f), finalColor, step(threshold + edgeSize, result));
+    fragColor = vec4(finalColor, 1.0);
 
 }

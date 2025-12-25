@@ -10,8 +10,8 @@ object PacketReceiver {
     init {
         ClientPlayNetworking.registerGlobalReceiver<CustomPayload?>(
             openMistikTolisPayload.id() as CustomPayload.Id<CustomPayload?>?
-        ) { _: CustomPayload?, context: ClientPlayNetworking.Context? ->
-            context!!.client().setScreen(MistikTolisScreen)
+        ) { _: CustomPayload?, context: ClientPlayNetworking.Context ->
+            context.client().setScreen(MistikTolisScreen)
         }
     }
 }

@@ -2,10 +2,19 @@ package net.mysticforge.quellcraft.item
 
 import net.fabricmc.fabric.api.item.v1.CustomDamageHandler
 import net.fabricmc.fabric.api.item.v1.EquipmentSlotProvider
+import net.minecraft.component.ComponentType
+import net.minecraft.component.DataComponentTypes
+import net.minecraft.component.type.EquippableComponent
 import net.minecraft.component.type.FoodComponent
+import net.minecraft.component.type.RepairableComponent
 import net.minecraft.entity.LivingEntity
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
+import net.minecraft.item.equipment.ArmorMaterial
+import net.minecraft.item.equipment.EquipmentType
+import net.minecraft.registry.Registries
+import net.minecraft.registry.RegistryEntryLookup
+import net.minecraft.registry.tag.TagKey
 import net.minecraft.resource.featuretoggle.FeatureFlag
 import net.minecraft.util.Rarity
 
@@ -89,6 +98,21 @@ open class QuellcraftItem(settings: Settings) : Item(settings) {
 
         override fun requires(vararg features: FeatureFlag?): QuellcraftItemSettings {
             super.requires(*features)
+            return this
+        }
+
+        override fun <T> component(type: ComponentType<T?>?, value: T?): QuellcraftItemSettings {
+            super.component(type, value)
+            return this
+        }
+
+        override fun repairable(repairIngredientsTag: TagKey<Item?>?): QuellcraftItemSettings {
+            super.repairable(repairIngredientsTag)
+            return this
+        }
+
+        override fun armor(material: ArmorMaterial, type: EquipmentType): QuellcraftItemSettings {
+            super.armor(material, type)
             return this
         }
     }

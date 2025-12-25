@@ -1,0 +1,25 @@
+{
+	"format_version": "1.21.6",
+	"credit": "Made with Blockbench",
+	"parent": "block/block",
+	"texture_size": [32, 32],
+	"textures": {
+		"11": "quellcraft:block/thaumic_assembler_top",
+		"particle": "quellcraft:block/thaumic_assembler_bottom"
+	},
+	"elements": [
+		{
+			"from": [3, 16, 3],
+			"to": [13, 17, 13],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 0, 13]},
+			"faces": {
+				"north": {"uv": [3, 12, 13, 13], "texture": "#11"},
+				"east": {"uv": [3, 13, 4, 3], "rotation": 90, "texture": "#11"},
+				"south": {"uv": [13, 3, 3, 4], "texture": "#11"},
+				"west": {"uv": [12, 3, 13, 13], "rotation": 90, "texture": "#11"},
+				"up": {"uv": [13, 13, 3, 3], "texture": "#11"},
+				"down": {"uv": [13, 3, 3, 13], "texture": "#11"}
+			}
+		}
+	]
+}

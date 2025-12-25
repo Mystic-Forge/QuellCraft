@@ -1,11 +1,9 @@
 package net.mysticforge.quellcraft.mixinimpl
 
-import net.minecraft.block.Block
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EquipmentSlot
 import net.minecraft.entity.LivingEntity
-import net.minecraft.world.BlockView
-import net.mysticforge.quellcraft.item.TurboTreadsItem
+import net.mysticforge.quellcraft.item.equipment.TurboTreadsItem
 
 object EntityMixinImpl {
     @JvmStatic

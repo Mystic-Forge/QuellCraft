@@ -1,14 +1,11 @@
 package net.mysticforge.quellcraft.block
 
-import net.fabricmc.fabric.api.`object`.builder.v1.block.entity.FabricBlockEntityType
 import net.fabricmc.fabric.api.`object`.builder.v1.block.entity.FabricBlockEntityTypeBuilder
 import net.minecraft.block.AbstractBlock
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityType
-import net.minecraft.command.argument.BlockPosArgumentType.blockPos
-import net.minecraft.command.argument.RegistryKeyArgumentType.registryKey
 import net.minecraft.item.BlockItem
 import net.minecraft.item.Item
 import net.minecraft.registry.Registries
@@ -19,15 +16,16 @@ import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.mysticforge.quellcraft.Quellcraft
 import net.mysticforge.quellcraft.block.entity.CrystalBlockEntity
-import net.mysticforge.quellcraft.block.entity.ThaumicAssemblerEntity
+import net.mysticforge.quellcraft.block.entity.ProjectDeskEntity
 
 object ModBlocks {
-    val thaumicAssembler = register(::ThaumicAssembler, "thaumic_assembler")
+    val thaumicAssembler = register(::ThaumicAssemblerBlock, "thaumic_assembler")
+    val projectDesk = register(::ProjectDeskBlock, "project_desk")
     val quellBlock = register(::QuellBlock, "quell")
     val crystalCluster = register(::CrystalBlock, "crystal_cluster")
 
     val crystalBlockEntityType = registerBlockEntity("crystal_block_entity", ::CrystalBlockEntity, crystalCluster)
-    val thaumicAssemblerEntityType = registerBlockEntity("thaumic_assembler_entity", ::ThaumicAssemblerEntity, thaumicAssembler)
+    val projectDeskEntityType = registerBlockEntity("project_desk_entity", ::ProjectDeskEntity, projectDesk)
 
     private fun register(blockFactory: (settings: AbstractBlock.Settings) -> Block, name: String, shouldRegisterItem: Boolean = true): Block {
         val id = Identifier.of(Quellcraft.MOD_ID, name)

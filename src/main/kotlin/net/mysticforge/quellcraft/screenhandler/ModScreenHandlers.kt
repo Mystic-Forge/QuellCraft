@@ -10,7 +10,8 @@ import net.mysticforge.quellcraft.Quellcraft
 
 
 object ModScreenHandlers {
-    val THAUMIC_ASSEMBLER_SCREEN_HANDLER_TYPE = register("thaumic_assembler", ::ThaumicAssemblerScreenHandler)
+    val projectDesk = register("project_desk", ::ProjectDeskScreenHandler)
+
 
     private fun <T : ScreenHandler>register(name: String, factory: ScreenHandlerType.Factory<T>) : ScreenHandlerType<T> {
         return Registry.register(

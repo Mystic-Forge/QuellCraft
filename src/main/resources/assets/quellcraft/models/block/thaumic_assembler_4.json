@@ -1,0 +1,27 @@
+{
+	"format_version": "1.21.6",
+	"credit": "Made with Blockbench",
+	"parent": "block/block",
+	"texture_size": [32, 32],
+	"textures": {
+		"7": "quellcraft:block/thaumic_assembler_bottom_3",
+		"10": "quellcraft:block/thaumic_assembler_side_2",
+		"14": "quellcraft:block/thaumic_assembler_top_3",
+		"particle": "quellcraft:block/thaumic_assembler_bottom"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [16, 16, 16],
+			"faces": {
+				"north": {"uv": [16, 0, 0, 16], "texture": "#10"},
+				"east": {"uv": [0, 0, 16, 16], "texture": "#10"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#10"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#10"},
+				"up": {"uv": [0, 16, 16, 0], "texture": "#14"},
+				"down": {"uv": [0, 0, 16, 16], "rotation": 270, "texture": "#7"}
+			}
+		}
+	],
+	"display": {}
+}

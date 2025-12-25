@@ -1,0 +1,36 @@
+{
+  "type": "quellcraft:thaumic_assembly",
+  "process": {
+    "type": "deliver",
+    "input": {
+      "type": "forge",
+      "inputs": [
+        {
+          "type": "forge",
+          "inputs": [
+            {
+              "type": "input",
+              "item": "minecraft:iron_ingot"
+            },
+            {
+              "type": "input",
+              "item": "minecraft:stick"
+            }
+          ]
+        },
+        {
+          "type": "infuser",
+          "inputs": [
+            {
+              "type": "input",
+              "item": "quellcraft:quell_capacitor"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "output": {
+    "item": "quellcraft:thaumic_drill"
+  }
+}

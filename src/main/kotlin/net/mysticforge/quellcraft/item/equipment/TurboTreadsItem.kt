@@ -1,4 +1,4 @@
-package net.mysticforge.quellcraft.item
+package net.mysticforge.quellcraft.item.equipment
 
 import net.minecraft.component.type.TooltipDisplayComponent
 import net.minecraft.entity.Entity
@@ -25,7 +25,7 @@ import net.mysticforge.quellcraft.quellmanagement.doQuellExplosion
 import net.mysticforge.quellcraft.state.property.QuellType
 import java.util.function.Consumer
 
-class TurboTreadsItem(settings: Settings) : Item(settings.armor(turboTreadsArmorMaterial, EquipmentType.BOOTS).maxCount(1)) {
+class TurboTreadsItem(settings: Settings) : Item(settings.armor(ModArmorMaterials.turboTreads, EquipmentType.BOOTS).maxCount(1)) {
     companion object {
         fun tryActivateTurboTreads(itemStack: ItemStack, entity: Entity): Boolean {
             if (!entity.isSneaking || !entity.isOnGround || entity.velocity.y > -0.2f) return false
@@ -78,22 +78,3 @@ class TurboTreadsItem(settings: Settings) : Item(settings.armor(turboTreadsArmor
         textConsumer.accept(Text.of("you, sending you flying into the air!"))
     }
 }
-
-private val turboTreadsEquipmentAsset = EquipmentAssetKeys.register("turbo_treads")
-
-val turboTreadsArmorMaterial = ArmorMaterial(
-    15, // Durability multiplier
-    mapOf( // Protection values
-        EquipmentType.BOOTS to 1,
-        EquipmentType.LEGGINGS to 2,
-        EquipmentType.CHESTPLATE to 3,
-        EquipmentType.HELMET to 1,
-        EquipmentType.BODY to 3
-    ),
-    15, // Enchantability,
-    SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, // Equip sound
-    0.0f, // Toughness
-    0.0f, // Knockback resistance
-    ItemTags.REPAIRS_LEATHER_ARMOR, // Repair ingredient tag
-    turboTreadsEquipmentAsset // Asset ID
-)

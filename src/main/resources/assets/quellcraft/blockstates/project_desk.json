@@ -1,0 +1,40 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "quellcraft:block/project_desk",
+        "y": 180
+      },
+      "when": {
+        "facing": "north"
+      }
+    },
+    {
+      "apply": {
+        "model": "quellcraft:block/project_desk",
+        "y": 270
+      },
+      "when": {
+        "facing": "east"
+      }
+    },
+    {
+      "apply": {
+        "model": "quellcraft:block/project_desk",
+        "y": 0
+      },
+      "when": {
+        "facing": "south"
+      }
+    },
+    {
+      "apply": {
+        "model": "quellcraft:block/project_desk",
+        "y": 90
+      },
+      "when": {
+        "facing": "west"
+      }
+    }
+  ]
+}

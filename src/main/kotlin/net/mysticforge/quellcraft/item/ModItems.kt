@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents
 import net.minecraft.item.Item
 import net.minecraft.item.ItemGroup
 import net.minecraft.item.ItemStack
+import net.minecraft.item.equipment.EquipmentType
 import net.minecraft.registry.Registries
 import net.minecraft.registry.Registry
 import net.minecraft.registry.RegistryKey
@@ -12,6 +13,9 @@ import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import net.mysticforge.quellcraft.Quellcraft
 import net.mysticforge.quellcraft.block.ModBlocks
+import net.mysticforge.quellcraft.item.equipment.ModArmorMaterials
+import net.mysticforge.quellcraft.item.equipment.SorcererHatItem
+import net.mysticforge.quellcraft.item.equipment.TurboTreadsItem
 import net.mysticforge.quellcraft.state.property.QuellType
 
 
@@ -31,6 +35,8 @@ object ModItems {
     val turboTreads: Item = register(::TurboTreadsItem, "turbo_treads")
     val blueprint: Item = register(::Blueprint, "blueprint")
     val thaumicDrill: Item = register(::Item, "thaumic_drill")
+
+    val sorcererHat: Item = register(::SorcererHatItem, QuellcraftItem.QuellcraftItemSettings(), "sorcerer_hat")
 
     private fun register(itemFactory: (settings: QuellcraftItem.QuellcraftItemSettings) -> Item, id: String): Item {
         val settings = QuellcraftItem.QuellcraftItemSettings()
@@ -63,6 +69,7 @@ object ModItems {
             itemGroup.add(turboTreads)
             itemGroup.add(thaumicDrill)
             itemGroup.add(blueprint)
+            itemGroup.add(sorcererHat)
         }
     }
 }
