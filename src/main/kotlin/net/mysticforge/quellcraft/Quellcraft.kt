@@ -17,6 +17,7 @@ object Quellcraft : ModInitializer {
 
     val LOGGER: Logger = LoggerFactory.getLogger(MOD_ID)
 
+    @Suppress("UnusedExpression")
     override fun onInitialize() {
         AutoConfig.register(QuellcraftConfig::class.java, ::Toml4jConfigSerializer)
         ModProperties

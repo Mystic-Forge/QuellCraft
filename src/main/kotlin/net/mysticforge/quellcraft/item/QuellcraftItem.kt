@@ -2,23 +2,18 @@ package net.mysticforge.quellcraft.item
 
 import net.fabricmc.fabric.api.item.v1.CustomDamageHandler
 import net.fabricmc.fabric.api.item.v1.EquipmentSlotProvider
-import net.minecraft.component.ComponentType
-import net.minecraft.component.DataComponentTypes
-import net.minecraft.component.type.EquippableComponent
-import net.minecraft.component.type.FoodComponent
-import net.minecraft.component.type.RepairableComponent
-import net.minecraft.entity.LivingEntity
-import net.minecraft.item.Item
-import net.minecraft.item.ItemStack
-import net.minecraft.item.equipment.ArmorMaterial
-import net.minecraft.item.equipment.EquipmentType
-import net.minecraft.registry.Registries
-import net.minecraft.registry.RegistryEntryLookup
-import net.minecraft.registry.tag.TagKey
-import net.minecraft.resource.featuretoggle.FeatureFlag
-import net.minecraft.util.Rarity
+import net.minecraft.core.component.DataComponentType
+import net.minecraft.tags.TagKey
+import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.flag.FeatureFlag
+import net.minecraft.world.food.FoodProperties
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Rarity
+import net.minecraft.world.item.equipment.ArmorMaterial
+import net.minecraft.world.item.equipment.ArmorType
 
-open class QuellcraftItem(settings: Settings) : Item(settings) {
+open class QuellcraftItem(settings: Properties) : Item(settings) {
     val knockbackBoost: Int
 
     init {
@@ -34,7 +29,7 @@ open class QuellcraftItem(settings: Settings) : Item(settings) {
         return knockbackBoost
     }
 
-    class QuellcraftItemSettings : Settings() {
+    class QuellcraftItemSettings : Properties() {
         var knockbackBoost = 0
 
         fun knockbackBoost(knockbackBoost: Int): QuellcraftItemSettings {
@@ -55,7 +50,7 @@ open class QuellcraftItem(settings: Settings) : Item(settings) {
 
         /**
          * Sets the custom damage handler of the item.
-         * Note that this is only called on an ItemStack if [ItemStack.isDamageable] returns true.
+         * Note that this is only called on an ItemStack if [ItemStack.isDamageableItem] returns true.
          *
          * @see CustomDamageHandler
          */
@@ -66,53 +61,53 @@ open class QuellcraftItem(settings: Settings) : Item(settings) {
 
 
         // Overrides of vanilla methods
-        override fun food(foodComponent: FoodComponent?): QuellcraftItemSettings {
+        override fun food(foodComponent: FoodProperties): QuellcraftItemSettings {
             super.food(foodComponent)
             return this
         }
 
-        override fun maxCount(maxCount: Int): QuellcraftItemSettings {
-            super.maxCount(maxCount)
+        override fun stacksTo(maxCount: Int): QuellcraftItemSettings {
+            super.stacksTo(maxCount)
             return this
         }
 
-        override fun maxDamage(maxDamage: Int): QuellcraftItemSettings {
-            super.maxDamage(maxDamage)
+        override fun durability(maxDamage: Int): QuellcraftItemSettings {
+            super.durability(maxDamage)
             return this
         }
 
-        override fun recipeRemainder(recipeRemainder: Item?): QuellcraftItemSettings {
-            super.recipeRemainder(recipeRemainder)
+        override fun craftRemainder(recipeRemainder: Item): QuellcraftItemSettings {
+            super.craftRemainder(recipeRemainder)
             return this
         }
 
-        override fun rarity(rarity: Rarity?): QuellcraftItemSettings {
+        override fun rarity(rarity: Rarity): QuellcraftItemSettings {
             super.rarity(rarity)
             return this
         }
 
-        override fun fireproof(): QuellcraftItemSettings {
-            super.fireproof()
+        override fun fireResistant(): QuellcraftItemSettings {
+            super.fireResistant()
             return this
         }
 
-        override fun requires(vararg features: FeatureFlag?): QuellcraftItemSettings {
-            super.requires(*features)
+        override fun requiredFeatures(vararg features: FeatureFlag): QuellcraftItemSettings {
+            super.requiredFeatures(*features)
             return this
         }
 
-        override fun <T> component(type: ComponentType<T?>?, value: T?): QuellcraftItemSettings {
+        override fun <T : Any> component(type: DataComponentType<T>, value: T): QuellcraftItemSettings {
             super.component(type, value)
             return this
         }
 
-        override fun repairable(repairIngredientsTag: TagKey<Item?>?): QuellcraftItemSettings {
+        override fun repairable(repairIngredientsTag: TagKey<Item?>): QuellcraftItemSettings {
             super.repairable(repairIngredientsTag)
             return this
         }
 
-        override fun armor(material: ArmorMaterial, type: EquipmentType): QuellcraftItemSettings {
-            super.armor(material, type)
+        override fun humanoidArmor(material: ArmorMaterial, type: ArmorType): QuellcraftItemSettings {
+            super.humanoidArmor(material, type)
             return this
         }
     }

@@ -4,13 +4,13 @@ import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.entity.EntityComponentInitializer;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.resources.ResourceLocation;
 import net.mysticforge.quellcraft.Quellcraft;
 
 public final class ModComponents implements EntityComponentInitializer {
     public static final ComponentKey<EntityQuellInfusionComponent> quellInfusion =
-        ComponentRegistry.getOrCreate(Identifier.of(Quellcraft.MOD_ID, EntityQuellInfusionComponent.KEY), EntityQuellInfusionComponent.class);
+        ComponentRegistry.getOrCreate(ResourceLocation.fromNamespaceAndPath(Quellcraft.MOD_ID, EntityQuellInfusionComponent.KEY), EntityQuellInfusionComponent.class);
 
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {

@@ -1,6 +1,6 @@
 package net.mysticforge.quellcraft.item
 
-import net.minecraft.item.Item
+import net.minecraft.world.item.Item
 
-class CrystalShardItem(settings: Settings) : Item(settings) {
+class CrystalShardItem(settings: Properties) : Item(settings) {
 }

@@ -2,17 +2,17 @@ package net.mysticforge.quellcraft.client
 
 import com.mojang.blaze3d.pipeline.BlendFunction
 import com.mojang.blaze3d.pipeline.RenderPipeline
+import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.VertexFormat
 import me.shedaniel.math.Color
 import net.fabricmc.api.ClientModInitializer
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.gl.RenderPipelines.GLOBALS_SNIPPET
-import net.minecraft.client.gl.RenderPipelines.TRANSFORMS_AND_PROJECTION_SNIPPET
-import net.minecraft.client.gui.DrawContext
-import net.minecraft.client.gui.screen.ingame.HandledScreens
-import net.minecraft.client.render.RenderTickCounter
-import net.minecraft.client.render.VertexFormats
-import net.minecraft.util.Identifier
+import net.minecraft.client.DeltaTracker
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.screens.MenuScreens
+import net.minecraft.client.renderer.RenderPipelines.GLOBALS_SNIPPET
+import net.minecraft.client.renderer.RenderPipelines.MATRICES_PROJECTION_SNIPPET
+import net.minecraft.resources.ResourceLocation
 import net.mysticforge.quellcraft.ModStatusEffects
 import net.mysticforge.quellcraft.Quellcraft
 import net.mysticforge.quellcraft.client.networking.PacketReceiver
@@ -26,12 +26,12 @@ import org.joml.Math
 object QuellCraftClient : ClientModInitializer {
 
     private val distortedOutlinePipeline by lazy {
-        RenderPipeline.builder(GLOBALS_SNIPPET, TRANSFORMS_AND_PROJECTION_SNIPPET)
+        RenderPipeline.builder(GLOBALS_SNIPPET, MATRICES_PROJECTION_SNIPPET)
             .withVertexShader("core/distorted_outline")
             .withFragmentShader("core/distorted_outline")
             .withSampler("Sampler0")
             .withBlend(BlendFunction.TRANSLUCENT)
-            .withVertexFormat(VertexFormats.POSITION_TEXTURE_COLOR, VertexFormat.DrawMode.QUADS)
+            .withVertexFormat(DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS)
             .withLocation("pipeline/distorted_outline")
             .build()
     }
@@ -41,16 +41,31 @@ object QuellCraftClient : ClientModInitializer {
     override fun onInitializeClient() {
         PacketReceiver
         BlueprintScreen
-        HandledScreens.register(ModScreenHandlers.projectDesk, ::ProjectDeskScreen)
+        MenuScreens.register(ModScreenHandlers.projectDesk, ::ProjectDeskScreen)
         AccessoryRenderers
 //        ModelLoadingPlugin.register(QuellcraftModelLoadingPlugin)
+
+//        ModItems.sorcererHat.onCreateGeoRenderer = { consumer ->
+//            consumer.accept(object : GeoRenderProvider {
+//                private var renderer: SorcererHatArmorRenderer<*>? = null
+//                override fun <S : HumanoidRenderState> getGeoArmorRenderer(
+//                    renderState: S?,
+//                    itemStack: ItemStack?,
+//                    equipmentSlot: EquipmentSlot?,
+//                    type: EquipmentClientInfo.LayerType?,
+//                    original: HumanoidModel<S?>?
+//                ): GeoArmorRenderer<*, *> {
+//                    if (renderer == null) renderer = SorcererHatArmorRenderer<>()
+//                    return renderer!!
+//                }
+//            })
     }
 
-    fun drawDistortedEffect(context: DrawContext, tickCounter: RenderTickCounter) {
+    fun drawDistortedEffect(context: GuiGraphics, tickCounter: DeltaTracker) {
 //        RenderSystem.setShaderGameTime(MinecraftClient.getInstance().world!!.time, tickDelta)
 
-        val player = MinecraftClient.getInstance().player ?: return
-        val effect = player.getStatusEffect(ModStatusEffects.distortedEffect)
+        val player = Minecraft.getInstance().player ?: return
+        val effect = player.getEffect(ModStatusEffects.distortedEffect)
 
         val targetEffectLevel = if (effect != null) effect.amplifier.toFloat() + 1 else 0f
 
@@ -59,19 +74,19 @@ object QuellCraftClient : ClientModInitializer {
         if (previousEffectLevel <= 0.01) return
 
 
-        val aspectRatio = context.scaledWindowWidth.toFloat() / context.scaledWindowHeight.toFloat() / 3
-        val noise = Identifier.of(Quellcraft.MOD_ID, "textures/misc/quell_noise.png")
-        context.drawTexture(
+        val aspectRatio = context.guiWidth().toFloat() / context.guiHeight().toFloat() / 3
+        val noise = ResourceLocation.fromNamespaceAndPath(Quellcraft.MOD_ID, "textures/misc/quell_noise.png")
+        context.blit(
             distortedOutlinePipeline,
             noise,
             0,
             0,
             0f,
             0f,
-            context.scaledWindowWidth,
-            context.scaledWindowHeight,
-            context.scaledWindowWidth,
-            context.scaledWindowHeight,
+            context.guiWidth(),
+            context.guiHeight(),
+            context.guiWidth(),
+            context.guiHeight(),
             Color.ofRGBA(previousEffectLevel / 5, aspectRatio, 0f, 0f).color
         )
     }

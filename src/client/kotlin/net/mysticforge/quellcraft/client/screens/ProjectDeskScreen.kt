@@ -1,28 +1,28 @@
 package net.mysticforge.quellcraft.client.screens
 
-import net.minecraft.client.gl.RenderPipelines
-import net.minecraft.client.gui.DrawContext
-import net.minecraft.client.gui.screen.ingame.HandledScreen
-import net.minecraft.entity.player.PlayerInventory
-import net.minecraft.text.Text
-import net.minecraft.util.Identifier
+import net.minecraft.client.renderer.RenderPipelines
+import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.world.entity.player.Inventory
+import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceLocation
 import net.mysticforge.quellcraft.Quellcraft
 import net.mysticforge.quellcraft.screenhandler.ProjectDeskScreenHandler
 
 
-class ProjectDeskScreen(handler: ProjectDeskScreenHandler, playerInventory: PlayerInventory, title: Text) :
-    HandledScreen<ProjectDeskScreenHandler>(handler, playerInventory, title) {
-    val TEXTURE: Identifier? = Identifier.of(Quellcraft.MOD_ID, "textures/gui/container/thaumic_assembler.png")
+class ProjectDeskScreen(handler: ProjectDeskScreenHandler, playerInventory: Inventory, title: Component) :
+    AbstractContainerScreen<ProjectDeskScreenHandler>(handler, playerInventory, title) {
+    val TEXTURE: ResourceLocation? = ResourceLocation.fromNamespaceAndPath(Quellcraft.MOD_ID, "textures/gui/container/thaumic_assembler.png")
 
     private val backgroundWidth = 175
     private val backgroundHeight = 192
 
-    override fun drawBackground(context: DrawContext, delta: Float, mouseX: Int, mouseY: Int) {
-        context.drawTexture(
+    override fun renderBg(context: GuiGraphics, delta: Float, mouseX: Int, mouseY: Int) {
+        context.blit(
             RenderPipelines.GUI_TEXTURED,
             TEXTURE,
-            x,
-            y,
+            leftPos,
+            topPos,
             0f,
             0f,
             backgroundWidth, backgroundHeight,
@@ -31,7 +31,7 @@ class ProjectDeskScreen(handler: ProjectDeskScreenHandler, playerInventory: Play
         )
     }
 
-    override fun render(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
         renderBackground(context, mouseX, mouseY, delta)
         super.render(context, mouseX, mouseY, delta)
 
@@ -48,12 +48,12 @@ class ProjectDeskScreen(handler: ProjectDeskScreenHandler, playerInventory: Play
 //                )
 //        }
 
-        drawMouseoverTooltip(context, mouseX, mouseY)
+        renderTooltip(context, mouseX, mouseY)
     }
 
     override fun init() {
         super.init()
-        titleX = (backgroundWidth - textRenderer.getWidth(title)) / 2
-        playerInventoryTitleY = 100
+        titleLabelX = (backgroundWidth - font.width(title)) / 2
+        inventoryLabelY = 100
     }
 }

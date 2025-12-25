@@ -1,9 +1,9 @@
 package net.mysticforge.quellcraft.util
 
-import net.minecraft.entity.Entity
-import net.minecraft.util.TypeFilter
-import net.minecraft.util.math.Box
-import net.minecraft.world.World
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.level.entity.EntityTypeTest
+import net.minecraft.world.phys.AABB
+import net.minecraft.world.level.Level
 
-inline fun <reified T : Entity> World.getEntitiesOfType(box: Box): List<T> =
-    getEntitiesByType(TypeFilter.instanceOf(T::class.java), box) { true }
+inline fun <reified T : Entity> Level.getEntitiesOfType(box: AABB): List<T> =
+    getEntities(EntityTypeTest.forClass(T::class.java), box) { true }

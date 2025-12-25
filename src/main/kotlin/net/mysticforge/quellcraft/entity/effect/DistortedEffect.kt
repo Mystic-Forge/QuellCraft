@@ -1,34 +1,32 @@
 package net.mysticforge.quellcraft.entity.effect
 
-import net.minecraft.command.argument.EntityArgumentType.entity
-import net.minecraft.entity.LivingEntity
-import net.minecraft.entity.attribute.AttributeContainer
-import net.minecraft.entity.attribute.EntityAttributeModifier
-import net.minecraft.entity.attribute.EntityAttributes
-import net.minecraft.entity.effect.StatusEffect
-import net.minecraft.entity.effect.StatusEffectCategory
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.server.world.ServerWorld
-import net.minecraft.sound.SoundEvents
-import net.minecraft.util.Identifier
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.sounds.SoundEvents
+import net.minecraft.world.effect.MobEffect
+import net.minecraft.world.effect.MobEffectCategory
+import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.ai.attributes.AttributeModifier
+import net.minecraft.world.entity.ai.attributes.Attributes
+import net.minecraft.world.entity.player.Player
 import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.random.asKotlinRandom
 
 
-class DistortedEffect : StatusEffect(StatusEffectCategory.HARMFUL, 0x000000) {
+class DistortedEffect : MobEffect(MobEffectCategory.HARMFUL, 0x000000) {
     private var lastMobAppliedEffects = mutableMapOf<LivingEntity, Int>()
 
-    private val speedModifierId = Identifier.of("quellcraft", "distorted_speed_modifier")
+    private val speedModifierId = ResourceLocation.fromNamespaceAndPath("quellcraft", "distorted_speed_modifier")
 
     // A list of effects stored in a pair where the first element is the apply effect and the second element is the remove effect
     private val effects = listOf(
         // 2 Damage
         DistortionEffect(
             apply = {
-                damage(world as ServerWorld, world.damageSources.generic(), 2.0f)
-                playSound(SoundEvents.ENTITY_TURTLE_EGG_CRACK, 0.5f, 2f)
+                hurtServer(level() as ServerLevel, level().damageSources().generic(), 2.0f)
+                playSound(SoundEvents.TURTLE_EGG_CRACK, 0.5f, 2f)
             },
             remove = { }
         ),
@@ -36,22 +34,22 @@ class DistortedEffect : StatusEffect(StatusEffectCategory.HARMFUL, 0x000000) {
         DistortionEffect(
             apply = {
                 heal(2.0f)
-                playSound(SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, 0.5f, 1.5f)
+                playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 0.5f, 1.5f)
             },
             remove = { }
         ),
         // Random minor speed
         DistortionEffect(
             apply = {
-                val effectInstance = attributes.getCustomInstance(EntityAttributes.MOVEMENT_SPEED)
+                val effectInstance = attributes.getInstance(Attributes.MOVEMENT_SPEED)
                 if (effectInstance != null) {
                     effectInstance.removeModifier(speedModifierId)
-                    effectInstance.addTemporaryModifier(EntityAttributeModifier(speedModifierId, random.nextTriangular(0.0, 0.05), EntityAttributeModifier.Operation.ADD_VALUE))
+                    effectInstance.addTransientModifier(AttributeModifier(speedModifierId, random.triangle(0.0, 0.05), AttributeModifier.Operation.ADD_VALUE))
                 }
-                playSound(SoundEvents.BLOCK_LODESTONE_HIT, 0.8f, 1.5f)
+                playSound(SoundEvents.LODESTONE_HIT, 0.8f, 1.5f)
             },
             remove = {
-                attributes.getCustomInstance(EntityAttributes.MOVEMENT_SPEED)?.removeModifier(speedModifierId)
+                attributes.getInstance(Attributes.MOVEMENT_SPEED)?.removeModifier(speedModifierId)
             }
         ),
         // Pushed in a random direction
@@ -59,17 +57,17 @@ class DistortedEffect : StatusEffect(StatusEffectCategory.HARMFUL, 0x000000) {
             apply = {
                 val randomDirection = random.nextFloat() * 2 * Math.PI
                 val amount = 0.5 + it * 0.1
-                addVelocity(cos(randomDirection) * amount, amount, sin(randomDirection) * amount)
-                playSound(SoundEvents.BLOCK_BASALT_BREAK, 0.2f, 0.6f)
+                push(cos(randomDirection) * amount, amount, sin(randomDirection) * amount)
+                playSound(SoundEvents.BASALT_BREAK, 0.2f, 0.6f)
             },
             remove = { }
         ),
         // Gain or lose small xp
         DistortionEffect(
             apply = {
-                if (this is PlayerEntity) {
-                    addExperience(random.nextInt(4) - 2)
-                    playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 0.2f, 1f)
+                if (this is Player) {
+                    giveExperiencePoints(random.nextInt(4) - 2)
+                    playSound(SoundEvents.EXPERIENCE_ORB_PICKUP, 0.2f, 1f)
                 }
             },
             remove = { }
@@ -81,10 +79,10 @@ class DistortedEffect : StatusEffect(StatusEffectCategory.HARMFUL, 0x000000) {
         val remove: LivingEntity.(amplifier: Int) -> Unit,
     )
 
-    override fun canApplyUpdateEffect(duration: Int, amplifier: Int) = true
+    override fun shouldApplyEffectTickThisTick(duration: Int, amplifier: Int) = true
 
 
-    override fun applyUpdateEffect(world: ServerWorld, entity: LivingEntity, amplifier: Int): Boolean {
+    override fun applyEffectTick(world: ServerLevel, entity: LivingEntity, amplifier: Int): Boolean {
         if (!lastMobAppliedEffects.containsKey(entity))
             lastMobAppliedEffects[entity] = -1
 
@@ -102,7 +100,7 @@ class DistortedEffect : StatusEffect(StatusEffectCategory.HARMFUL, 0x000000) {
 //            }
 //        }
 
-        val random = Random(entity.world.time)
+        val random = Random(entity.level().gameTime)
 
         val chance = 100 - (amp * 10)
         if (random.nextInt(chance) == 0) {

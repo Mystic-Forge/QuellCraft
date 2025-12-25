@@ -1,11 +1,11 @@
 package net.mysticforge.quellcraft.util
 
-import net.minecraft.inventory.Inventory
-import net.minecraft.item.ItemStack
-import net.minecraft.screen.slot.Slot
+import net.minecraft.world.Container
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.inventory.Slot
 
-class FilteredSlot(inventory: Inventory, index: Int, x: Int, y: Int, val predicate: (item: ItemStack) -> Boolean, val stackSize: Int = 64) : Slot(inventory, index, x, y) {
-    override fun canInsert(stack: ItemStack?): Boolean = stack?.let(predicate) ?: false
+class FilteredSlot(inventory: Container, index: Int, x: Int, y: Int, val predicate: (item: ItemStack) -> Boolean, val stackSize: Int = 64) : Slot(inventory, index, x, y) {
+    override fun mayPlace(stack: ItemStack): Boolean = predicate(stack)
 
-    override fun getMaxItemCount(stack: ItemStack?): Int = stackSize
+    override fun getMaxStackSize(stack: ItemStack): Int = stackSize
 }

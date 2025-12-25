@@ -1,16 +1,16 @@
 package net.mysticforge.quellcraft.item
 
 import io.wispforest.accessories.api.core.AccessoryItem
-import net.minecraft.entity.Entity
-import net.minecraft.entity.EquipmentSlot
-import net.minecraft.item.ItemStack
-import net.minecraft.server.world.ServerWorld
-import net.minecraft.util.math.random.Random
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.EquipmentSlot
+import net.minecraft.world.item.ItemStack
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.util.RandomSource
 import net.mysticforge.quellcraft.itemcomponents.ModItemComponents
 import net.mysticforge.quellcraft.quellmanagement.QuellAbsorbentItem
 import net.mysticforge.quellcraft.quellmanagement.QuellContent
 
-class LuckyCrystal(settings: Settings) : AccessoryItem(settings.maxCount(1)), QuellAbsorbentItem {
+class LuckyCrystal(settings: Properties) : AccessoryItem(settings.stacksTo(1)), QuellAbsorbentItem {
     companion object {
         private const val MAX_QUELL_CONTENT = 100
         private const val ABSORPTION_RATIO = 0.5
@@ -41,11 +41,11 @@ class LuckyCrystal(settings: Settings) : AccessoryItem(settings.maxCount(1)), Qu
         itemStack.set(ModItemComponents.quellContentComponent, newQuellContent)
     }
 
-    override fun inventoryTick(stack: ItemStack, world: ServerWorld, entity: Entity, slot: EquipmentSlot?) {
+    override fun inventoryTick(stack: ItemStack, world: ServerLevel, entity: Entity, slot: EquipmentSlot?) {
         tryDecayQuellContent(stack, world.random)
     }
 
-    private fun tryDecayQuellContent(itemStack: ItemStack, random: Random) {
+    private fun tryDecayQuellContent(itemStack: ItemStack, random: RandomSource) {
         val currentQuellContent = itemStack.components.get(ModItemComponents.quellContentComponent)
         if (currentQuellContent is QuellContent.Filled && random.nextDouble() < DECAY_CHANCE) {
             itemStack.set(ModItemComponents.quellContentComponent, currentQuellContent - 1)

@@ -1,14 +1,14 @@
 package net.mysticforge.quellcraft.client.screens
 
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.gl.RenderPipelines
-import net.minecraft.client.gui.DrawContext
-import net.minecraft.client.gui.screen.Screen
-import net.minecraft.client.network.ClientPlayerEntity
-import net.minecraft.item.ItemStack
-import net.minecraft.item.Items
-import net.minecraft.text.Text
-import net.minecraft.util.Identifier
+import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.RenderPipelines
+import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.screens.Screen
+import net.minecraft.client.player.LocalPlayer
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
+import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceLocation
 import net.mysticforge.quellcraft.Quellcraft
 import net.mysticforge.quellcraft.item.Blueprint
 import net.mysticforge.quellcraft.item.ModItems
@@ -19,8 +19,8 @@ import org.joml.plus
 import kotlin.random.Random
 
 object BlueprintScreen :
-    Screen(Text.of("Blueprint")) {
-    val TEXTURE: Identifier? = Identifier.of(Quellcraft.MOD_ID, "textures/gui/blueprint.png")
+    Screen(Component.nullToEmpty("Blueprint")) {
+    val TEXTURE: ResourceLocation? = ResourceLocation.fromNamespaceAndPath(Quellcraft.MOD_ID, "textures/gui/blueprint.png")
 
     private val backgroundSize = Vector2i(224, 224)
     private val cellSize = 28
@@ -57,7 +57,7 @@ object BlueprintScreen :
             override val spriteOffset = Vector2i(0, 0)
             override val direction = CellDirection.NONE
             override val takesInput = false
-            override fun draw(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float, position: Vector2i) {}
+            override fun draw(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float, position: Vector2i) {}
             override fun withDirection(direction: CellDirection): CellType = Empty
         }
 
@@ -81,9 +81,9 @@ object BlueprintScreen :
             override val takesInput = false
             override val cost: Int = if(direction == CellDirection.NONE) 0 else 1
 
-            override fun draw(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float, position: Vector2i) {
+            override fun draw(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float, position: Vector2i) {
                 super.draw(context, mouseX, mouseY, delta, position)
-                context.drawItem(itemStack, position.x + 6, position.y + 6)
+                context.renderItem(itemStack, position.x + 6, position.y + 6)
             }
 
             override fun withDirection(direction: CellDirection): CellType = Input(itemStack, direction)
@@ -103,8 +103,8 @@ object BlueprintScreen :
             override fun withDirection(direction: CellDirection): CellType = Infuser(direction)
         }
 
-        fun draw(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float, position: Vector2i) {
-            context.drawTexture(
+        fun draw(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float, position: Vector2i) {
+            context.blit(
                 RenderPipelines.GUI_TEXTURED,
                 TEXTURE,
                 position.x,
@@ -129,9 +129,9 @@ object BlueprintScreen :
     init {
         Blueprint.onUseEvent = { world, player, hand ->
             // The single player client runs this code twice. (Untested if server runs this). Either way only the rendering client opens the screen.
-            if (player is ClientPlayerEntity) {
+            if (player is LocalPlayer) {
                 randomizeLayout()
-                MinecraftClient.getInstance().setScreen(BlueprintScreen)
+                Minecraft.getInstance().setScreen(BlueprintScreen)
             }
         }
     }
@@ -171,10 +171,10 @@ object BlueprintScreen :
         }
     }
 
-    override fun render(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
         super.render(context, mouseX, mouseY, delta)
-        val margin = Vector2i(context.scaledWindowWidth / 2 - backgroundSize.x / 2, context.scaledWindowHeight / 2 - backgroundSize.y / 2)
-        context.drawTexture(
+        val margin = Vector2i(context.guiWidth() / 2 - backgroundSize.x / 2, context.guiHeight() / 2 - backgroundSize.y / 2)
+        context.blit(
             RenderPipelines.GUI_TEXTURED,
             TEXTURE,
             margin.x,
@@ -205,7 +205,7 @@ object BlueprintScreen :
                 val cell = cells[x][y]
                 if (cell.direction == CellDirection.NONE) continue
 
-                context.drawTexture(
+                context.blit(
                     RenderPipelines.GUI_TEXTURED,
                     TEXTURE,
                     cellPos.x + cell.direction.vector.x * cellSize / 2,
@@ -220,19 +220,19 @@ object BlueprintScreen :
             }
         }
 
-        context.drawText(
-            textRenderer,
+        context.drawString(
+            font,
             "Blueprint",
-            margin.x + backgroundSize.x / 2 - textRenderer.getWidth("Blueprint") / 2,
+            margin.x + backgroundSize.x / 2 - font.width("Blueprint") / 2,
             margin.y + 8,
             -0x1,
             false
         )
 
-        context.drawText(
-            textRenderer,
+        context.drawString(
+            font,
             "$score",
-            margin.x + backgroundSize.x / 2 - textRenderer.getWidth("$score") / 2,
+            margin.x + backgroundSize.x / 2 - font.width("$score") / 2,
             margin.y + backgroundSize.y - 16,
             -0x1,
             false

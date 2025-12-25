@@ -1,8 +1,8 @@
 package net.mysticforge.quellcraft.quellmanagement
 
-import net.minecraft.nbt.NbtCompound
-import net.minecraft.storage.ReadView
-import net.minecraft.storage.WriteView
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.world.level.storage.ValueInput
+import net.minecraft.world.level.storage.ValueOutput
 import net.mysticforge.quellcraft.quellmanagement.QuellContent.Empty
 import net.mysticforge.quellcraft.quellmanagement.QuellContent.Filled
 import net.mysticforge.quellcraft.state.property.QuellType
@@ -51,17 +51,17 @@ sealed interface QuellContent {
     operator fun plus(other: QuellContent): QuellContent
 }
 
-fun <WV : WriteView> WV.writeQuellContent(key: String, quellContent: QuellContent): WV =
+fun <WV : ValueOutput> WV.writeQuellContent(key: String, quellContent: QuellContent): WV =
     modify {
         put(
             key,
-            NbtCompound.CODEC,
+            CompoundTag.CODEC,
             createNbtCompound {
                 put(
                     "quell_type",
                     when (quellContent) {
                         Empty -> "empty"
-                        is Filled -> quellContent.quellType.asString()
+                        is Filled -> quellContent.quellType.serializedName
                     }
                 )
 
@@ -72,22 +72,22 @@ fun <WV : WriteView> WV.writeQuellContent(key: String, quellContent: QuellConten
         )
     }.build()
 
-fun ReadView.readQuellContent(key: String): QuellContent =
-    with(getReadView(key)) {
+fun ValueInput.readQuellContent(key: String): QuellContent =
+    with(childOrEmpty(key)) {
         if (this == null) {
             return@with null
         }
 
-        when (val quellTypeName = getString("quell_type", null)) {
+        when (val quellTypeName = getStringOr("quell_type", "").takeIf { it.isNotEmpty() }) {
             "empty" -> Empty
             else -> {
-                QuellType.entries.find { it.asString() == quellTypeName }?.let {
+                QuellType.entries.find { it.serializedName == quellTypeName }?.let {
                     try {
                         Filled(
                             quellType = it,
-                            storedThaum = getInt("stored_thaum", 0)
+                            storedThaum = getIntOr("stored_thaum", 0)
                         )
-                    } catch (e: Throwable) {
+                    } catch (_: Throwable) {
                         null
                     }
                 }

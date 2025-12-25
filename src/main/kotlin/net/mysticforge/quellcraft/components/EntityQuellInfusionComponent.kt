@@ -3,11 +3,10 @@ package net.mysticforge.quellcraft.components
 import org.ladysnake.cca.api.v3.component.ComponentV3
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent
 import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent
-import net.minecraft.entity.LivingEntity
-import net.minecraft.entity.effect.StatusEffectInstance
-import net.minecraft.nbt.NbtCompound
-import net.minecraft.storage.ReadView
-import net.minecraft.storage.WriteView
+import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.effect.MobEffectInstance
+import net.minecraft.world.level.storage.ValueInput
+import net.minecraft.world.level.storage.ValueOutput
 import net.mysticforge.quellcraft.ModStatusEffects
 import net.mysticforge.quellcraft.QuellcraftConfig
 
@@ -30,15 +29,15 @@ class EntityQuellInfusionComponent(private val entity: LivingEntity) : IntCompon
 
         val targetAmplifier = (value / 100).coerceAtMost(5)
 
-        var statusEffectInstance = entity.getStatusEffect(ModStatusEffects.distortedEffect)
+        var statusEffectInstance = entity.getEffect(ModStatusEffects.distortedEffect)
         if (statusEffectInstance == null && targetAmplifier > 0) {
-            statusEffectInstance = StatusEffectInstance(ModStatusEffects.distortedEffect, -1, targetAmplifier - 1, false, false, true)
-            entity.addStatusEffect(statusEffectInstance)
+            statusEffectInstance = MobEffectInstance(ModStatusEffects.distortedEffect, -1, targetAmplifier - 1, false, false, true)
+            entity.addEffect(statusEffectInstance)
         } else if (statusEffectInstance != null && targetAmplifier == 0) {
-            entity.removeStatusEffect(ModStatusEffects.distortedEffect)
+            entity.removeEffect(ModStatusEffects.distortedEffect)
         } else if (statusEffectInstance != null && statusEffectInstance.amplifier != targetAmplifier - 1) {
-            entity.setStatusEffect(
-                StatusEffectInstance(ModStatusEffects.distortedEffect, -1, targetAmplifier - 1, false, false, true),
+            entity.forceAddEffect(
+                MobEffectInstance(ModStatusEffects.distortedEffect, -1, targetAmplifier - 1, false, false, true),
                 null
             )
         }
@@ -52,11 +51,11 @@ class EntityQuellInfusionComponent(private val entity: LivingEntity) : IntCompon
         if (infusionAmount > 0 && entity.random.nextFloat() < QuellcraftConfig.quellInfusionDecay) setValue(infusionAmount - 1)
     }
 
-    override fun readData(p0: ReadView) {
-        infusionAmount = p0.getInt(KEY, 0)
+    override fun readData(p0: ValueInput) {
+        infusionAmount = p0.getIntOr(KEY, 0)
     }
 
-    override fun writeData(p0: WriteView) {
+    override fun writeData(p0: ValueOutput) {
         p0.putInt(KEY, infusionAmount)
     }
 }

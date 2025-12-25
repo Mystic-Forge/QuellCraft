@@ -1,10 +1,8 @@
 package net.mysticforge.quellcraft.quellmanagement
 
-import net.minecraft.item.ItemStack
+import net.minecraft.world.item.ItemStack
 
-interface QuellAbsorbent {
-
-}
+interface QuellAbsorbent
 
 interface QuellAbsorbentItem: QuellAbsorbent {
     /**

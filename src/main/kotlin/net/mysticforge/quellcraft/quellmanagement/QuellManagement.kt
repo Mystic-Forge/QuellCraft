@@ -2,14 +2,14 @@ package net.mysticforge.quellcraft.quellmanagement
 
 import io.wispforest.accessories.api.AccessoriesCapability
 import io.wispforest.accessories.api.slot.SlotEntryReference
-import net.minecraft.entity.LivingEntity
-import net.minecraft.item.ItemStack
-import net.minecraft.particle.ParticleTypes
-import net.minecraft.sound.SoundCategory
-import net.minecraft.sound.SoundEvents
-import net.minecraft.util.math.Box
-import net.minecraft.util.math.Vec3d
-import net.minecraft.world.World
+import net.minecraft.core.particles.ParticleTypes
+import net.minecraft.sounds.SoundEvents
+import net.minecraft.sounds.SoundSource
+import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.Level
+import net.minecraft.world.phys.AABB
+import net.minecraft.world.phys.Vec3
 import net.mysticforge.quellcraft.components.ModComponents
 import net.mysticforge.quellcraft.state.property.QuellType
 import net.mysticforge.quellcraft.util.getEntitiesOfType
@@ -17,13 +17,13 @@ import net.mysticforge.quellcraft.util.nextDouble
 import kotlin.math.floor
 import kotlin.random.Random
 
-fun World.emitQuell(quellContent: QuellContent, point: Vec3d, range: Double) {
+fun Level.emitQuell(quellContent: QuellContent, point: Vec3, range: Double) {
     if (quellContent !is QuellContent.Filled) return
 
     data class QuellAbsorbentStack(val stack: ItemStack, val item: QuellAbsorbentItem)
 
-    val entities = getEntitiesOfType<LivingEntity>(Box(point, point).expand(range))
-        .filter { it.pos.subtract(point).lengthSquared() <= range * range }
+    val entities = getEntitiesOfType<LivingEntity>(AABB(point, point).inflate(range))
+        .filter { it.position().subtract(point).lengthSqr() <= range * range }
 
     val quellAbsorbentItems = entities.flatMap {
         var accessories = AccessoriesCapability.get(it)?.allEquipped
@@ -53,16 +53,16 @@ fun World.emitQuell(quellContent: QuellContent, point: Vec3d, range: Double) {
     println("Absorbed $absorbed thaum into items, remaining $remaining thaum was infused into entities")
 }
 
-fun World.doQuellExplosion(quellContent: QuellContent, point: Vec3d, range: Double) {
+fun Level.doQuellExplosion(quellContent: QuellContent, point: Vec3, range: Double) {
     if (quellContent !is QuellContent.Filled) return
 
     when ((quellContent).quellType) {
         QuellType.Void -> {
-            for (i in 0..<(20 * quellContent.storedThaum).coerceAtMost(10000)) {
-                val randomOffset = Vec3d(random.nextDouble() - 0.5, random.nextDouble() - 0.5, random.nextDouble() - 0.5)
-                val direction = randomOffset.normalize().multiply(random.nextDouble(0.5..<range))
-                val position = point.add(randomOffset.normalize().multiply(random.nextDouble(0.2..<.5)))
-                addParticleClient(
+            repeat((20 * quellContent.storedThaum).coerceAtMost(10000)) {
+                val randomOffset = Vec3(random.nextDouble() - 0.5, random.nextDouble() - 0.5, random.nextDouble() - 0.5)
+                val direction = randomOffset.normalize().scale(random.nextDouble(0.5..<range))
+                val position = point.add(randomOffset.normalize().scale(random.nextDouble(0.2..<.5)))
+                addParticle(
                     ParticleTypes.REVERSE_PORTAL,
                     position.x,
                     position.y,
@@ -73,16 +73,16 @@ fun World.doQuellExplosion(quellContent: QuellContent, point: Vec3d, range: Doub
                 )
             }
 
-            playSoundClient(point.x, point.y, point.z, SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.PLAYERS, 1.0f, 1.0f, true)
+            playLocalSound(point.x, point.y, point.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1.0f, 1.0f, true)
         }
 
         QuellType.Thermal -> {
-            for (i in 0..<(20 * quellContent.storedThaum).coerceAtMost(10000)) {
-                val randomOffset = Vec3d(random.nextDouble() - 0.5, random.nextDouble() - 0.5, random.nextDouble() - 0.5)
-                val position = point.add(randomOffset.normalize().multiply(0.4))
-                val direction = randomOffset.normalize().multiply(random.nextDouble(0.0..<range * 0.15))
+            repeat((20 * quellContent.storedThaum).coerceAtMost(10000)) {
+                val randomOffset = Vec3(random.nextDouble() - 0.5, random.nextDouble() - 0.5, random.nextDouble() - 0.5)
+                val position = point.add(randomOffset.normalize().scale(0.4))
+                val direction = randomOffset.normalize().scale(random.nextDouble(0.0..<range * 0.15))
 
-                addParticleClient(
+                addParticle(
                     if (Random.nextDouble() < 0.4) ParticleTypes.FLAME else ParticleTypes.SMOKE,
                     position.x,
                     position.y,
@@ -93,16 +93,16 @@ fun World.doQuellExplosion(quellContent: QuellContent, point: Vec3d, range: Doub
                 )
             }
 
-            playSoundClient(point.x, point.y, point.z, SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.PLAYERS, 1.0f, 1.0f, true)
+            playLocalSound(point.x, point.y, point.z, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0f, 1.0f, true)
         }
 
         QuellType.Life -> {
-            for (i in 0..<(20 * quellContent.storedThaum).coerceAtMost(10000)) {
-                val randomOffset = Vec3d(random.nextDouble() - 0.5, random.nextDouble() - 0.5, random.nextDouble() - 0.5)
-                val position = point.add(randomOffset.normalize().multiply(random.nextDouble(0.0..<range)))
-                val direction = randomOffset.normalize().multiply(random.nextDouble(0.0..<range))
+            repeat((20 * quellContent.storedThaum).coerceAtMost(10000)) {
+                val randomOffset = Vec3(random.nextDouble() - 0.5, random.nextDouble() - 0.5, random.nextDouble() - 0.5)
+                val position = point.add(randomOffset.normalize().scale(random.nextDouble(0.0..<range)))
+                val direction = randomOffset.normalize().scale(random.nextDouble(0.0..<range))
 
-                addParticleClient(
+                addParticle(
                     ParticleTypes.HAPPY_VILLAGER,
                     position.x,
                     position.y,
@@ -113,7 +113,7 @@ fun World.doQuellExplosion(quellContent: QuellContent, point: Vec3d, range: Doub
                 )
             }
 
-            playSoundClient(point.x, point.y, point.z, SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 0.2f, 1.0f, true)
+            playLocalSound(point.x, point.y, point.z, SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.2f, 1.0f, true)
         }
     }
 }

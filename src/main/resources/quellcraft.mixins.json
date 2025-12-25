@@ -8,8 +8,8 @@
     "EntityMixin",
     "LivingEntityMixin",
     "MinecraftServerAccessor",
-    "PlayerEntityMixin",
-    "SimpleRegistryAccessor"
+    "PlayerMixin",
+    "MappedRegistryAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

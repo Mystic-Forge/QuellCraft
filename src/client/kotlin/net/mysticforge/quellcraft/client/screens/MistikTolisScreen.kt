@@ -1,14 +1,14 @@
 package net.mysticforge.quellcraft.client.screens
 
-import net.minecraft.client.gl.RenderPipelines
-import net.minecraft.client.gui.DrawContext
-import net.minecraft.client.gui.screen.Screen
-import net.minecraft.text.Text
-import net.minecraft.util.Identifier
+import net.minecraft.client.renderer.RenderPipelines
+import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.screens.Screen
+import net.minecraft.network.chat.Component
+import net.minecraft.resources.ResourceLocation
 import org.joml.Vector2i
 import org.joml.Vector4i
 
-object MistikTolisScreen : Screen(Text.of("Mistik Tolis")) {
+object MistikTolisScreen : Screen(Component.nullToEmpty("Mistik Tolis")) {
 //    var shader = FabricShaderProgram(MinecraftClient.getInstance().resourceManager, Identifier.of("minecraft", "mistik_tolis_background"), VertexFormats.POSITION_TEXTURE)
 
     override fun init() {
@@ -22,17 +22,18 @@ object MistikTolisScreen : Screen(Text.of("Mistik Tolis")) {
 //        addDrawableChild(buttonWidget)
     }
 
-    override fun render(context: DrawContext, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
         super.render(context, mouseX, mouseY, delta)
 
 //        context.drawText(this.textRenderer, "Special Button", 40, 40 - textRenderer.fontHeight - 10, -0x1, true)
         val mistikTolisResolution = Vector2i(332, 242)
         val borderPadding = 16;
-        val marginX = context.scaledWindowWidth / 2 - 332 / 2
-        val marginY = context.scaledWindowHeight / 2 - 242 / 2
+        val marginX = context.guiWidth() / 2 - 332 / 2
+        val marginY = context.guiHeight() / 2 - 242 / 2
         val leftPageRegion = Vector4i(marginX + borderPadding, marginY + borderPadding, marginX + mistikTolisResolution.x / 2 - borderPadding, marginY + mistikTolisResolution.y - borderPadding)
-        context.drawTexture(RenderPipelines.GUI_TEXTURED,
-            Identifier.of("quellcraft", "textures/gui/mistik_tolis_border.png"),
+        context.blit(
+            RenderPipelines.GUI_TEXTURED,
+            ResourceLocation.fromNamespaceAndPath("quellcraft", "textures/gui/mistik_tolis_border.png"),
             marginX,
             marginY,
             0f,
@@ -42,9 +43,9 @@ object MistikTolisScreen : Screen(Text.of("Mistik Tolis")) {
             332,
             242
         )
-        context.drawTexture(
+        context.blit(
             RenderPipelines.GUI_TEXTURED,
-            Identifier.of("quellcraft", "textures/gui/mistik_tolis_pages.png"),
+            ResourceLocation.fromNamespaceAndPath("quellcraft", "textures/gui/mistik_tolis_pages.png"),
             marginX,
             marginY,
             0f,
@@ -55,7 +56,7 @@ object MistikTolisScreen : Screen(Text.of("Mistik Tolis")) {
             242
         )
         context.enableScissor(leftPageRegion.x, leftPageRegion.y, leftPageRegion.z, leftPageRegion.w)
-        context.drawText(textRenderer, "Mistik Tolis", leftPageRegion.x, leftPageRegion.y, -0x1, false)
+        context.drawString(font, "Mistik Tolis", leftPageRegion.x, leftPageRegion.y, -0x1, false)
         context.disableScissor()
     }
 

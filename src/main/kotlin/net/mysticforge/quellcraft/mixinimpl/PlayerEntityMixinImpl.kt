@@ -1,26 +1,26 @@
 package net.mysticforge.quellcraft.mixinimpl
 
-import net.minecraft.enchantment.EnchantmentHelper
-import net.minecraft.enchantment.Enchantments
-import net.minecraft.entity.Entity
-import net.minecraft.entity.attribute.EntityAttributes
-import net.minecraft.entity.damage.DamageSource
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.server.world.ServerWorld
+import net.minecraft.world.item.enchantment.EnchantmentHelper
+import net.minecraft.world.item.enchantment.Enchantments
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.ai.attributes.Attributes
+import net.minecraft.world.damagesource.DamageSource
+import net.minecraft.world.entity.player.Player
+import net.minecraft.server.level.ServerLevel
 import net.mysticforge.quellcraft.item.QuellcraftItem
 
 object PlayerEntityMixinImpl {
     @JvmStatic
-    fun PlayerEntity.getKnockback(entity: Entity, damageSource: DamageSource): Float {
-        val f = this.getAttributeValue(EntityAttributes.ATTACK_KNOCKBACK).toFloat()
-        val world = this.getWorld()
-        var knockback = if (world is ServerWorld)
-            EnchantmentHelper.modifyKnockback(world, this.getWeaponStack(), entity, damageSource, f)
+    fun Player.getKnockback(entity: Entity, damageSource: DamageSource): Float {
+        val f = this.getAttributeValue(Attributes.ATTACK_KNOCKBACK).toFloat()
+        val world = this.level()
+        var knockback = if (world is ServerLevel)
+            EnchantmentHelper.modifyKnockback(world, this.weaponItem, entity, damageSource, f)
         else
             f
 
-        val stack = mainHandStack
-        if (!stack.isEmpty && stack.item is QuellcraftItem) knockback += (mainHandStack.item as QuellcraftItem).knockbackBoost
+        val stack = mainHandItem
+        if (!stack.isEmpty && stack.item is QuellcraftItem) knockback += (mainHandItem.item as QuellcraftItem).knockbackBoost
 
         return knockback
     }

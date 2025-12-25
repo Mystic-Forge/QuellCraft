@@ -1,22 +1,22 @@
 package net.mysticforge.quellcraft.state.property
 
-import net.minecraft.state.property.EnumProperty
-import net.minecraft.state.property.IntProperty
-import net.minecraft.util.StringIdentifiable
+import net.minecraft.world.level.block.state.properties.EnumProperty
+import net.minecraft.world.level.block.state.properties.IntegerProperty
+import net.minecraft.util.StringRepresentable
 
 object ModProperties {
-    val intensity: IntProperty = IntProperty.of("intensity", 0, 5)
-    val quellType: EnumProperty<QuellTypeProperty> = EnumProperty.of("quell_type", QuellTypeProperty::class.java)
-    val quellLevel: IntProperty = IntProperty.of("quell_level", 0, 3)
+    val intensity: IntegerProperty = IntegerProperty.create("intensity", 0, 5)
+    val quellType: EnumProperty<QuellTypeProperty> = EnumProperty.create("quell_type", QuellTypeProperty::class.java)
+    val quellLevel: IntegerProperty = IntegerProperty.create("quell_level", 0, 3)
 }
 
-enum class QuellType(private val propertyEquivalent: QuellTypeProperty) : StringIdentifiable {
+enum class QuellType(private val propertyEquivalent: QuellTypeProperty) : StringRepresentable {
     Void(QuellTypeProperty.Void),
     Thermal(QuellTypeProperty.Thermal),
     Life(QuellTypeProperty.Life);
 
     override fun toString() = propertyEquivalent.toString()
-    override fun asString() = propertyEquivalent.asString()
+    override fun getSerializedName() = propertyEquivalent.serializedName
 
     fun asProperty(): QuellTypeProperty = when (this) {
         Void -> QuellTypeProperty.Void
@@ -25,14 +25,14 @@ enum class QuellType(private val propertyEquivalent: QuellTypeProperty) : String
     }
 }
 
-enum class QuellTypeProperty(val typeName: String) : StringIdentifiable {
+enum class QuellTypeProperty(val typeName: String) : StringRepresentable {
     Void("void"),
     Thermal("thermal"),
     Life("life"),
     Null("null");
 
     override fun toString() = typeName
-    override fun asString() = typeName
+    override fun getSerializedName() = typeName
 
     fun asQuellType(): QuellType? = when (this) {
         Void -> QuellType.Void

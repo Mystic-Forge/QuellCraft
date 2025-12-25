@@ -1,10 +1,10 @@
 package net.mysticforge.quellcraft.mixin;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.AttributeContainer;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeMap;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.mysticforge.quellcraft.ModStatusEffects;
 import net.mysticforge.quellcraft.entity.effect.DistortedEffect;
 import org.jetbrains.annotations.Nullable;
@@ -17,45 +17,45 @@ import java.util.Collection;
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin {
     @Redirect(
-        method = "onStatusEffectUpgraded",
+        method = "onEffectUpdated",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/entity/effect/StatusEffect;onRemoved(Lnet/minecraft/entity/attribute/AttributeContainer;)V"
+            target = "Lnet/minecraft/world/effect/MobEffect;removeAttributeModifiers(Lnet/minecraft/world/entity/ai/attributes/AttributeMap;)V"
         )
     )
     private void redirectOnRemoved1(
-        StatusEffect instance,
-        AttributeContainer attributeContainer,
-        StatusEffectInstance effect,
-        boolean reapplyEffect,
-        @Nullable Entity source
+            MobEffect instance,
+            AttributeMap attributeContainer,
+            MobEffectInstance effect,
+            boolean reapplyEffect,
+            @Nullable Entity source
     ) {
         if (instance instanceof DistortedEffect distortedEffect) {
             distortedEffect.onRemovedForEntity((LivingEntity) (Object) this, effect.getAmplifier());
         } else {
-            instance.onRemoved(attributeContainer);
+            instance.removeAttributeModifiers(attributeContainer);
         }
     }
 
     @Redirect(
-        method = "onStatusEffectsRemoved",
+        method = "onEffectsRemoved",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/entity/effect/StatusEffect;onRemoved(Lnet/minecraft/entity/attribute/AttributeContainer;)V"
+            target = "Lnet/minecraft/world/effect/MobEffect;removeAttributeModifiers(Lnet/minecraft/world/entity/ai/attributes/AttributeMap;)V"
         )
     )
-    private void redirectOnRemoved2(StatusEffect instance, AttributeContainer attributeContainer, Collection<StatusEffectInstance> effects) {
+    private void redirectOnRemoved2(MobEffect instance, AttributeMap attributeContainer, Collection<MobEffectInstance> effects) {
         if (instance instanceof DistortedEffect distortedEffect) {
             @SuppressWarnings("OptionalGetWithoutIsPresent") 
             final var effectInstance = effects
                 .stream()
-                .filter(e -> e.getEffectType() == ModStatusEffects.getDistortedEffect())
+                .filter(e -> e.getEffect() == ModStatusEffects.getDistortedEffect())
                 .findFirst()
                 .get();
 
             distortedEffect.onRemovedForEntity((LivingEntity) (Object) this, effectInstance.getAmplifier());
         } else {
-            instance.onRemoved(attributeContainer);
+            instance.removeAttributeModifiers(attributeContainer);
         }
     }
 }

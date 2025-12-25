@@ -1,11 +1,11 @@
 package net.mysticforge.quellcraft.mixin;
 
-import net.minecraft.registry.SimpleRegistry;
+import net.minecraft.core.MappedRegistry;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(SimpleRegistry.class)
-public interface SimpleRegistryAccessor {
+@Mixin(MappedRegistry.class)
+public interface MappedRegistryAccessor {
     @Accessor("frozen")
     boolean getFrozen();
 

@@ -1,23 +1,20 @@
 package net.mysticforge.quellcraft.item.equipment
 
-import net.minecraft.component.type.TooltipDisplayComponent
-import net.minecraft.entity.Entity
-import net.minecraft.entity.EquipmentSlot
-import net.minecraft.entity.LivingEntity
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.item.Item
-import net.minecraft.item.ItemStack
-import net.minecraft.item.equipment.ArmorMaterial
-import net.minecraft.item.equipment.EquipmentAssetKeys
-import net.minecraft.item.equipment.EquipmentType
-import net.minecraft.item.tooltip.TooltipType
-import net.minecraft.registry.tag.ItemTags
-import net.minecraft.server.world.ServerWorld
-import net.minecraft.sound.SoundCategory
-import net.minecraft.sound.SoundEvents
-import net.minecraft.text.Text
-import net.minecraft.util.math.Direction
-import net.minecraft.util.math.Vec3d
+import net.minecraft.core.Direction
+import net.minecraft.network.chat.Component
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.sounds.SoundEvents
+import net.minecraft.sounds.SoundSource
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.EquipmentSlot
+import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.TooltipFlag
+import net.minecraft.world.item.component.TooltipDisplay
+import net.minecraft.world.item.equipment.ArmorType
+import net.minecraft.world.phys.Vec3
 import net.mysticforge.quellcraft.QuellcraftConfig
 import net.mysticforge.quellcraft.itemcomponents.ModItemComponents
 import net.mysticforge.quellcraft.quellmanagement.QuellContent
@@ -25,14 +22,14 @@ import net.mysticforge.quellcraft.quellmanagement.doQuellExplosion
 import net.mysticforge.quellcraft.state.property.QuellType
 import java.util.function.Consumer
 
-class TurboTreadsItem(settings: Settings) : Item(settings.armor(ModArmorMaterials.turboTreads, EquipmentType.BOOTS).maxCount(1)) {
+class TurboTreadsItem(settings: Properties) : Item(settings.humanoidArmor(ModArmorMaterials.turboTreads, ArmorType.BOOTS).stacksTo(1)) {
     companion object {
         fun tryActivateTurboTreads(itemStack: ItemStack, entity: Entity): Boolean {
-            if (!entity.isSneaking || !entity.isOnGround || entity.velocity.y > -0.2f) return false
+            if (!entity.isShiftKeyDown || !entity.onGround() || entity.deltaMovement.y > -0.2f) return false
 
-            val world = entity.world
+            val world = entity.level()
 
-            if (entity is PlayerEntity && entity.abilities.flying) return false
+            if (entity is Player && entity.abilities.flying) return false
 
             val charge = itemStack.get(ModItemComponents.chargeComponent) ?: 0
             if (charge < QuellcraftConfig.turboTreadsChargeTime) return false
@@ -40,41 +37,41 @@ class TurboTreadsItem(settings: Settings) : Item(settings.armor(ModArmorMaterial
             val launchPower = QuellcraftConfig.turboTreadsBoost.toDouble()
             itemStack.set(ModItemComponents.chargeComponent, 0)
 
-            val velocity = entity.velocity
-            val horizontalDirection = velocity.withAxis(Direction.Axis.Y, 0.0)
+            val velocity = entity.deltaMovement
+            val horizontalDirection = velocity.with(Direction.Axis.Y, 0.0)
             val horizontalBoosting = horizontalDirection.length() > 0.05
             val horizontalBoost = if (horizontalBoosting)
-                velocity.withAxis(Direction.Axis.Y, 0.0).normalize().multiply(launchPower)
-            else Vec3d.ZERO
-            val finalVelocity = Vec3d(horizontalBoost.x, if (horizontalBoosting) launchPower * 0.7 else launchPower, horizontalBoost.z)
+                velocity.with(Direction.Axis.Y, 0.0).normalize().scale(launchPower)
+            else Vec3.ZERO
+            val finalVelocity = Vec3(horizontalBoost.x, if (horizontalBoosting) launchPower * 0.7 else launchPower, horizontalBoost.z)
 
-            entity.velocity = finalVelocity
+            entity.deltaMovement = finalVelocity
 
             if (entity is LivingEntity) {
-                if (world is ServerWorld) entity.damage(world, entity.damageSources.generic(), 3f)
-                world.doQuellExplosion(QuellContent.Filled(QuellType.Void, 20), entity.pos, 5.0)
+                if (world is ServerLevel) entity.hurtServer(world, entity.damageSources().generic(), 3f)
+                world.doQuellExplosion(QuellContent.Filled(QuellType.Void, 20), entity.position(), 5.0)
             }
             return true
         }
     }
 
-    override fun inventoryTick(itemStack: ItemStack, world: ServerWorld, entity: Entity, slot: EquipmentSlot?) {
+    override fun inventoryTick(itemStack: ItemStack, world: ServerLevel, entity: Entity, slot: EquipmentSlot?) {
         val charge = itemStack.get(ModItemComponents.chargeComponent) ?: 0
         if (charge < QuellcraftConfig.turboTreadsChargeTime) {
             if (charge == QuellcraftConfig.turboTreadsChargeTime - 1)
-                world.playSoundClient(entity.x, entity.y, entity.z, SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 1f, 1f, false)
+                world.playLocalSound(entity.x, entity.y, entity.z, SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 1f, 1f, false)
             itemStack.set(ModItemComponents.chargeComponent, charge + 1)
         }
     }
 
-    override fun appendTooltip(stack: ItemStack, context: TooltipContext, displayComponent: TooltipDisplayComponent, textConsumer: Consumer<Text>, type: TooltipType) {
+    override fun appendHoverText(stack: ItemStack, context: TooltipContext, displayComponent: TooltipDisplay, textConsumer: Consumer<Component>, type: TooltipFlag) {
         val charge = stack.get(ModItemComponents.chargeComponent)
         if (charge != null) {
-            textConsumer.accept(Text.of("Charge: ${(charge / QuellcraftConfig.turboTreadsChargeTime.toFloat() * 100).toInt()}%"))
+            textConsumer.accept(Component.nullToEmpty("Charge: ${(charge / QuellcraftConfig.turboTreadsChargeTime.toFloat() * 100).toInt()}%"))
         }
 
-        textConsumer.accept(Text.of("Once charged, landing while sneaking"))
-        textConsumer.accept(Text.of("will cause a violent explosion beneath"))
-        textConsumer.accept(Text.of("you, sending you flying into the air!"))
+        textConsumer.accept(Component.nullToEmpty("Once charged, landing while sneaking"))
+        textConsumer.accept(Component.nullToEmpty("will cause a violent explosion beneath"))
+        textConsumer.accept(Component.nullToEmpty("you, sending you flying into the air!"))
     }
 }

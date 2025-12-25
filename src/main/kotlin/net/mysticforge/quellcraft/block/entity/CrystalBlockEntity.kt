@@ -1,22 +1,22 @@
 package net.mysticforge.quellcraft.block.entity
 
-import net.minecraft.block.Block
-import net.minecraft.block.BlockState
-import net.minecraft.block.entity.BlockEntity
-import net.minecraft.block.entity.BlockEntityTicker
-import net.minecraft.nbt.NbtCompound
-import net.minecraft.network.listener.ClientPlayPacketListener
-import net.minecraft.network.packet.Packet
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket
-import net.minecraft.particle.ParticleTypes
-import net.minecraft.registry.RegistryWrapper
-import net.minecraft.state.property.Properties
-import net.minecraft.storage.NbtWriteView
-import net.minecraft.storage.ReadView
-import net.minecraft.storage.WriteView
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3d
-import net.minecraft.world.World
+import net.minecraft.world.level.block.Block
+import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.level.block.entity.BlockEntity
+import net.minecraft.world.level.block.entity.BlockEntityTicker
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.network.protocol.game.ClientGamePacketListener
+import net.minecraft.network.protocol.Packet
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket
+import net.minecraft.core.particles.ParticleTypes
+import net.minecraft.core.HolderLookup
+import net.minecraft.world.level.block.state.properties.BlockStateProperties
+import net.minecraft.world.level.storage.TagValueOutput
+import net.minecraft.world.level.storage.ValueInput
+import net.minecraft.world.level.storage.ValueOutput
+import net.minecraft.core.BlockPos
+import net.minecraft.world.phys.Vec3
+import net.minecraft.world.level.Level
 import net.mysticforge.quellcraft.block.ModBlocks
 import net.mysticforge.quellcraft.quellmanagement.*
 import net.mysticforge.quellcraft.state.property.ModProperties
@@ -36,21 +36,21 @@ class CrystalBlockEntity(blockPos: BlockPos, blockState: BlockState) :
             field = value
             when (value) {
                 is QuellContent.Empty -> {
-                    if (cachedState.get(ModProperties.intensity) != 0) {
-                        getWorld()?.setBlockState(pos, cachedState.with(ModProperties.intensity, 0))
-                        world?.updateListeners(pos, cachedState, cachedState, Block.NOTIFY_ALL)
+                    if (blockState.getValue(ModProperties.intensity) != 0) {
+                        level?.setBlockAndUpdate(worldPosition, blockState.setValue(ModProperties.intensity, 0))
+                        level?.sendBlockUpdated(worldPosition, blockState, blockState, Block.UPDATE_ALL)
                     }
                     return
                 }
 
                 is QuellContent.Filled -> {
                     val powerLevel = ceil((value.storedThaum / 50f) * 5).toInt().coerceAtMost(5)
-                    getWorld()?.setBlockState(
-                        pos, cachedState
-                            .with(ModProperties.intensity, powerLevel)
-                            .with(ModProperties.quellType, value.quellType.asProperty())
+                    level?.setBlockAndUpdate(
+                        worldPosition, blockState
+                            .setValue(ModProperties.intensity, powerLevel)
+                            .setValue(ModProperties.quellType, value.quellType.asProperty())
                     )
-                    world?.updateListeners(pos, cachedState, cachedState, Block.NOTIFY_ALL)
+                    level?.sendBlockUpdated(worldPosition, blockState, blockState, Block.UPDATE_ALL)
                 }
             }
         }
@@ -59,14 +59,14 @@ class CrystalBlockEntity(blockPos: BlockPos, blockState: BlockState) :
      * Utility for getting the position of the visual model. This is useful since the model has random global offsets and 6 rotations
      * @return The world position of the model
      */
-    private fun BlockState.getModelPos(pos: BlockPos): Vec3d {
-        val modelOffset = getModelOffset(pos)
-        val facingOffset = get(Properties.FACING).opposite.unitVector.mul(0.5f)
-        return pos.toCenterPos().add(facingOffset.x.toDouble(), facingOffset.y.toDouble(), facingOffset.z.toDouble()).add(modelOffset)
+    private fun BlockState.getModelPos(pos: BlockPos): Vec3 {
+        val modelOffset = getOffset(pos)
+        val facingOffset = getValue(BlockStateProperties.FACING).opposite.step().mul(0.5f)
+        return pos.center.add(facingOffset.x.toDouble(), facingOffset.y.toDouble(), facingOffset.z.toDouble()).add(modelOffset)
     }
 
-    override fun tick(world: World, pos: BlockPos, state: BlockState, blockEntity: CrystalBlockEntity) {
-        if (!world.isClient()) return
+    override fun tick(world: Level, pos: BlockPos, state: BlockState, blockEntity: CrystalBlockEntity) {
+        if (!world.isClientSide) return
 
         val random = world.random
         val modelPos = state.getModelPos(pos)
@@ -75,9 +75,9 @@ class CrystalBlockEntity(blockPos: BlockPos, blockState: BlockState) :
             if (random.nextInt(50) < filledContent.storedThaum) {
                 when (filledContent.quellType) {
                     QuellType.Void -> {
-                        val randomOffset = Vec3d(random.nextDouble() * 5 - 2.5, random.nextDouble() * 5 - 4, random.nextDouble() * 5 - 2.5).multiply(0.2)
-                        val targetOffset = randomOffset.normalize().multiply(0.2)
-                        world.addParticleClient(
+                        val randomOffset = Vec3(random.nextDouble() * 5 - 2.5, random.nextDouble() * 5 - 4, random.nextDouble() * 5 - 2.5).scale(0.2)
+                        val targetOffset = randomOffset.normalize().scale(0.2)
+                        world.addParticle(
                             ParticleTypes.PORTAL,
                             modelPos.x + targetOffset.x,
                             modelPos.y + targetOffset.y,
@@ -89,9 +89,9 @@ class CrystalBlockEntity(blockPos: BlockPos, blockState: BlockState) :
                     }
 
                     QuellType.Thermal -> {
-                        val randomOffset = Vec3d(random.nextDouble() * 5 - 2.5, random.nextDouble() * 5 - 4, random.nextDouble() * 5 - 2.5).multiply(0.2)
-                        val targetOffset = randomOffset.normalize().multiply(0.2)
-                        world.addParticleClient(
+                        val randomOffset = Vec3(random.nextDouble() * 5 - 2.5, random.nextDouble() * 5 - 4, random.nextDouble() * 5 - 2.5).scale(0.2)
+                        val targetOffset = randomOffset.normalize().scale(0.2)
+                        world.addParticle(
                             ParticleTypes.SMOKE,
                             modelPos.x + targetOffset.x,
                             modelPos.y + targetOffset.y,
@@ -103,9 +103,9 @@ class CrystalBlockEntity(blockPos: BlockPos, blockState: BlockState) :
                     }
 
                     QuellType.Life -> {
-                        val randomOffset = Vec3d(random.nextDouble() * 5 - 2.5, random.nextDouble() * 5 - 4, random.nextDouble() * 5 - 2.5).multiply(0.2)
-                        val targetOffset = randomOffset.normalize().multiply(0.2)
-                        world.addParticleClient(
+                        val randomOffset = Vec3(random.nextDouble() * 5 - 2.5, random.nextDouble() * 5 - 4, random.nextDouble() * 5 - 2.5).scale(0.2)
+                        val targetOffset = randomOffset.normalize().scale(0.2)
+                        world.addParticle(
                             ParticleTypes.HAPPY_VILLAGER,
                             modelPos.x + targetOffset.x,
                             modelPos.y + targetOffset.y,
@@ -120,23 +120,23 @@ class CrystalBlockEntity(blockPos: BlockPos, blockState: BlockState) :
         }
     }
 
-    fun onBreak(world: World, pos: BlockPos, state: BlockState) {
+    fun onBreak(world: Level, pos: BlockPos, state: BlockState) {
         world.emitQuell(quellContent, state.getModelPos(pos), 5.0)
         val point = state.getModelPos(pos)
         world.doQuellExplosion(quellContent, point, 5.0)
     }
 
-    override fun toUpdatePacket(): Packet<ClientPlayPacketListener> = BlockEntityUpdateS2CPacket.create(this)
+    override fun getUpdatePacket(): Packet<ClientGamePacketListener> = ClientboundBlockEntityDataPacket.create(this)
 
-    override fun toInitialChunkDataNbt(registries: RegistryWrapper.WrapperLookup): NbtCompound = NbtWriteView.create(null).writeQuellContent(NBT_KEY, quellContent).nbt
+    override fun getUpdateTag(registries: HolderLookup.Provider): CompoundTag = TagValueOutput.createWithoutContext(null).writeQuellContent(NBT_KEY, quellContent).buildResult()
 
-    override fun readData(view: ReadView) {
-        super.readData(view)
+    override fun loadAdditional(view: ValueInput) {
+        super.loadAdditional(view)
         quellContent = view.readQuellContent(NBT_KEY)
     }
 
-    override fun writeData(view: WriteView) {
-        super.writeData(view)
+    override fun saveAdditional(view: ValueOutput) {
+        super.saveAdditional(view)
         view.writeQuellContent(NBT_KEY, quellContent)
     }
 

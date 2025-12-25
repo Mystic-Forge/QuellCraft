@@ -1,20 +1,20 @@
 package net.mysticforge.quellcraft.networking
 
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry
-import net.minecraft.network.RegistryByteBuf
-import net.minecraft.network.codec.PacketCodec
-import net.minecraft.network.packet.CustomPayload
-import net.minecraft.util.Identifier
+import net.minecraft.network.RegistryFriendlyByteBuf
+import net.minecraft.network.codec.StreamCodec
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload
+import net.minecraft.resources.ResourceLocation
 import net.mysticforge.quellcraft.Quellcraft
 
 object ModPayloads {
     val openMistikTolisPayload = PayloadTypeRegistry.playS2C().register(OpenMistikTolisPayload.payloadId, OpenMistikTolisPayload.codec)
 }
 
-object OpenMistikTolisPayload : CustomPayload {
-    val openMistikTolisId: Identifier = Identifier.of(Quellcraft.MOD_ID, "open_mistik_tolis")
-    val payloadId: CustomPayload.Id<OpenMistikTolisPayload?> = CustomPayload.Id<OpenMistikTolisPayload?>(openMistikTolisId)
-    val codec = PacketCodec.unit<RegistryByteBuf, OpenMistikTolisPayload>(OpenMistikTolisPayload)
+object OpenMistikTolisPayload : CustomPacketPayload {
+    val openMistikTolisId: ResourceLocation = ResourceLocation.fromNamespaceAndPath(Quellcraft.MOD_ID, "open_mistik_tolis")
+    val payloadId: CustomPacketPayload.Type<OpenMistikTolisPayload?> = CustomPacketPayload.Type<OpenMistikTolisPayload?>(openMistikTolisId)
+    val codec = StreamCodec.unit<RegistryFriendlyByteBuf, OpenMistikTolisPayload>(OpenMistikTolisPayload)
 
-    override fun getId(): CustomPayload.Id<out CustomPayload?> = payloadId
+    override fun type(): CustomPacketPayload.Type<out CustomPacketPayload?> = payloadId
 }

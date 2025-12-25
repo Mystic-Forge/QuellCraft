@@ -1,5 +1,5 @@
 package net.mysticforge.quellcraft.util
 
-import net.minecraft.util.math.random.Random
+import net.minecraft.util.RandomSource
 
-fun Random.nextDouble(range: OpenEndRange<Double>) = nextDouble() * (range.endExclusive - range.start) + range.start
+fun RandomSource.nextDouble(range: OpenEndRange<Double>) = nextDouble() * (range.endExclusive - range.start) + range.start
