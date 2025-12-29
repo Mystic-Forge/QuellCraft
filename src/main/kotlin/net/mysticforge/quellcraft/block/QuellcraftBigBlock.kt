@@ -3,7 +3,6 @@ package net.mysticforge.quellcraft.block
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Vec3i
 import net.minecraft.server.level.ServerLevel
-import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.context.BlockPlaceContext
 import net.minecraft.world.level.*
@@ -37,7 +36,7 @@ abstract class QuellcraftBigBlock(settings: Properties) : BaseEntityBlock(settin
         return super.getStateForPlacement(blockPlaceContext)
     }
 
-    override fun setPlacedBy(level: Level, blockPos: BlockPos, blockState: BlockState, livingEntity: LivingEntity?, itemStack: ItemStack) {
+    override fun onPlace(blockState: BlockState, level: Level, blockPos: BlockPos, blockState2: BlockState, bl: Boolean) {
         for (offset in proxyOffsets) {
             if (offset == Vec3i.ZERO) continue
             val state = getProxyBlock().withOriginOffset(offset)
