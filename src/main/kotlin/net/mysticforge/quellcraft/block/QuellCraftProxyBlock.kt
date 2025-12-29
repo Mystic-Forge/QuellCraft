@@ -18,13 +18,23 @@ import java.util.function.BiConsumer
  * Base class for proxy blocks used by QuellcraftBigBlock to occupy multiple block spaces.
  */
 abstract class QuellcraftProxyBlock(settings: Properties) : Block(settings.noOcclusion()) {
-    abstract val sourceBlock: QuellcraftBigBlock
+    abstract val sourceBlock: QuellCraftBigBlock
         get
 
     abstract val offsetProperty: IntegerProperty
         get
 
-    val shapes: List<VoxelShape> = sourceBlock.proxyOffsets.map { offset -> sourceBlock.shape.move(offset.multiply(-1)) }
+    /** Returns the offset from this block to the origin block. */
+    fun getOffsetToSource(state: BlockState): Vec3i {
+        val index = state.getValue(offsetProperty)
+        return sourceBlock.proxyOffsets[index].multiply(-1)
+    }
+
+    /** Returns a BlockState for this proxy block with the given offset. The offset should point from the proxy to the source. */
+    fun withOffsetToSource(offset: Vec3i): BlockState {
+        val index = sourceBlock.proxyOffsets.indexOf(offset)
+        return defaultBlockState().setValue(offsetProperty, index)
+    }
 
     override fun createBlockStateDefinition(builder: StateDefinition.Builder<Block, BlockState>) {
         builder.add(offsetProperty)
@@ -32,22 +42,20 @@ abstract class QuellcraftProxyBlock(settings: Properties) : Block(settings.noOcc
 
     // Handle pick block
     override fun getCloneItemStack(levelReader: LevelReader, blockPos: BlockPos, blockState: BlockState, bl: Boolean): ItemStack? {
-        val offset = getOriginOffset(blockState)
+        val offset = getOffsetToSource(blockState)
         val originPos = blockPos.offset(offset)
         val originState = levelReader.getBlockState(originPos)
         return sourceBlock.getCloneItemStackWrapper(levelReader, originPos, originState, bl)
     }
 
+    // Copy the shape of the source block with offsets
+    val shapes: List<VoxelShape> = sourceBlock.proxyOffsets.map { offset -> sourceBlock.shape.move(offset.multiply(-1)) }
     override fun getShape(blockState: BlockState, blockGetter: BlockGetter, blockPos: BlockPos, collisionContext: CollisionContext): VoxelShape =
         shapes[blockState.getValue(offsetProperty)]
 
-    fun getOriginOffset(state: BlockState): Vec3i {
-        val index = state.getValue(offsetProperty)
-        return sourceBlock.proxyOffsets[index].multiply(-1)
-    }
-
+    // Handle all destruction cases
     override fun onExplosionHit(blockState: BlockState, serverLevel: ServerLevel, blockPos: BlockPos, explosion: Explosion, biConsumer: BiConsumer<ItemStack?, BlockPos?>) {
-        val offset = getOriginOffset(blockState)
+        val offset = getOffsetToSource(blockState)
         val originPos = blockPos.offset(offset)
         val originState = serverLevel.getBlockState(originPos)
         sourceBlock.explosionHitWrapper(originState, serverLevel, originPos, explosion, biConsumer)
@@ -60,17 +68,12 @@ abstract class QuellcraftProxyBlock(settings: Properties) : Block(settings.noOcc
     override fun destroy(levelAccessor: LevelAccessor, blockPos: BlockPos, blockState: BlockState) {
         if(levelAccessor.isClientSide) return
 
-        val offset = getOriginOffset(blockState)
+        val offset = getOffsetToSource(blockState)
         val originPos = blockPos.offset(offset)
         val originState = levelAccessor.getBlockState(originPos)
-        if (originState.block is QuellcraftBigBlock) {
+        if (originState.block is QuellCraftBigBlock) {
             sourceBlock.removeProxies(levelAccessor, originPos)
             levelAccessor.destroyBlock(originPos, true)
         }
-    }
-
-    fun withOriginOffset(offset: Vec3i): BlockState {
-        val index = sourceBlock.proxyOffsets.indexOf(offset)
-        return defaultBlockState().setValue(offsetProperty, index)
     }
 }

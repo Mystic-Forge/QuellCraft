@@ -1,15 +1,16 @@
-// Made with Blockbench 5.0.7
-// Exported for Minecraft version 1.17+ for Yarn
-// Paste this class into your mod and generate all required imports
 package net.mysticforge.quellcraft.client.render.model
 
-import net.minecraft.client.model.EntityModel
+import net.minecraft.client.model.Model
 import net.minecraft.client.model.geom.ModelPart
 import net.minecraft.client.model.geom.PartPose
 import net.minecraft.client.model.geom.builders.*
-import net.minecraft.client.renderer.entity.state.EntityRenderState
+import net.minecraft.client.renderer.RenderType
+import net.mysticforge.quellcraft.block.entity.GravityExtractorEntity
+import org.joml.AxisAngle4f
+import org.joml.Quaternionf
+import org.joml.Vector3f
 
-class GravityExtractorModel(root: ModelPart) : EntityModel<EntityRenderState>(root) {
+class GravityExtractorModel(root: ModelPart) : Model(root, RenderType::entitySolid) {
     private val body: ModelPart
     private val arm_middle: ModelPart
     private val arm1: ModelPart
@@ -36,6 +37,12 @@ class GravityExtractorModel(root: ModelPart) : EntityModel<EntityRenderState>(ro
         this.bb_main = root.getChild("bb_main")
     }
 
+    fun doAnim(renderState: GravityExtractorEntity.GravityExtractorRenderState) {
+        resetPose()
+        bb_main.rotateBy(Quaternionf(AxisAngle4f(renderState.rotation, 0f, 1f, 0f)))
+        bb_main.offsetPos(Vector3f(0f, -renderState.y, 0f))
+    }
+
     companion object {
         val texturedModelData: LayerDefinition
             get() {
@@ -57,9 +64,11 @@ class GravityExtractorModel(root: ModelPart) : EntityModel<EntityRenderState>(ro
                 val arm1: PartDefinition = PartDefinition.addOrReplaceChild("arm1", CubeListBuilder.create(), PartPose.offset(-17.35f, -3.75f, 8.0f))
 
                 val cube_r1: PartDefinition? = arm1.addOrReplaceChild(
-                    "cube_r1", CubeListBuilder.create().texOffs(0, 0).addBox(-6.9479f, -11.5748f, -2.0f, 2.0f, 4.0f, 4.0f, CubeDeformation(0.0f))
+                    "cube_r1",
+                    CubeListBuilder.create().texOffs(0, 0).addBox(-6.9479f, -11.5748f, -2.0f, 2.0f, 4.0f, 4.0f, CubeDeformation(0.0f))
                         .texOffs(0, 0).addBox(-10.9479f, -11.5748f, -2.0f, 4.0f, 5.0f, 4.0f, CubeDeformation(0.0f))
-                        .texOffs(0, 0).addBox(-11.9479f, -6.5748f, -3.0f, 6.0f, 5.0f, 6.0f, CubeDeformation(0.0f)), PartPose.offsetAndRotation(17.35f, -3.0409f, -8.0f, 1.5708f, -0.829f, -1.5708f)
+                        .texOffs(0, 0).addBox(-11.9479f, -6.5748f, -3.0f, 6.0f, 5.0f, 6.0f, CubeDeformation(0.0f)),
+                    PartPose.offsetAndRotation(17.35f, -3.0409f, -8.0f, 1.5708f, -0.829f, -1.5708f)
                 )
 
                 val arm2: PartDefinition = PartDefinition.addOrReplaceChild("arm2", CubeListBuilder.create(), PartPose.offset(-17.35f, -3.75f, 8.0f))
@@ -73,9 +82,11 @@ class GravityExtractorModel(root: ModelPart) : EntityModel<EntityRenderState>(ro
                 val arm3: PartDefinition = PartDefinition.addOrReplaceChild("arm3", CubeListBuilder.create(), PartPose.offset(1.35f, -3.75f, 8.0f))
 
                 val cube_r3: PartDefinition? = arm3.addOrReplaceChild(
-                    "cube_r3", CubeListBuilder.create().texOffs(0, 0).addBox(4.9479f, -11.5748f, -2.0f, 2.0f, 4.0f, 4.0f, CubeDeformation(0.0f))
+                    "cube_r3",
+                    CubeListBuilder.create().texOffs(0, 0).addBox(4.9479f, -11.5748f, -2.0f, 2.0f, 4.0f, 4.0f, CubeDeformation(0.0f))
                         .texOffs(0, 0).addBox(6.9479f, -11.5748f, -2.0f, 4.0f, 5.0f, 4.0f, CubeDeformation(0.0f))
-                        .texOffs(0, 0).addBox(5.9479f, -6.5748f, -3.0f, 6.0f, 5.0f, 6.0f, CubeDeformation(0.0f)), PartPose.offsetAndRotation(-1.35f, -3.0409f, -8.0f, -1.5708f, -0.829f, 1.5708f)
+                        .texOffs(0, 0).addBox(5.9479f, -6.5748f, -3.0f, 6.0f, 5.0f, 6.0f, CubeDeformation(0.0f)),
+                    PartPose.offsetAndRotation(-1.35f, -3.0409f, -8.0f, -1.5708f, -0.829f, 1.5708f)
                 )
 
                 val arm4: PartDefinition = PartDefinition.addOrReplaceChild("arm4", CubeListBuilder.create(), PartPose.offset(1.35f, -3.75f, 8.0f))

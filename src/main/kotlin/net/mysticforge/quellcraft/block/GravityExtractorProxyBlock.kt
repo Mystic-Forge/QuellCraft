@@ -3,7 +3,7 @@ package net.mysticforge.quellcraft.block
 import net.minecraft.world.level.block.state.properties.IntegerProperty
 
 class GravityExtractorProxyBlock(settings: Properties) : QuellcraftProxyBlock(settings) {
-    override val sourceBlock: QuellcraftBigBlock
+    override val sourceBlock: QuellCraftBigBlock
         get() = ModBlocks.gravityExtractor
 
     override val offsetProperty: IntegerProperty

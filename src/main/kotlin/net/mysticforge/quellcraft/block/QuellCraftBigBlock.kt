@@ -13,9 +13,9 @@ import net.minecraft.world.phys.shapes.VoxelShape
 import java.util.function.BiConsumer
 
 /**
- * Base class for "big blocks" that use proxy blocks to occupy multiple block spaces.
+ * Base class for "big blocks" that use `QuellCraftProxyBlock`s to occupy multiple positions.
  */
-abstract class QuellcraftBigBlock(settings: Properties) : BaseEntityBlock(settings) {
+abstract class QuellCraftBigBlock(settings: Properties) : BaseEntityBlock(settings) {
     abstract val proxyOffsets: List<Vec3i>
         get
 
@@ -24,8 +24,17 @@ abstract class QuellcraftBigBlock(settings: Properties) : BaseEntityBlock(settin
 
     abstract fun getProxyBlock(): QuellcraftProxyBlock
 
-    override fun getShape(blockState: BlockState, blockGetter: BlockGetter, blockPos: BlockPos, collisionContext: CollisionContext): VoxelShape = shape
+    /** Remove all proxy blocks associated to this BigBlock. This does not "destroy" them, it just silently removes them */
+    fun removeProxies(levelAccess: LevelAccessor, blockPos: BlockPos) {
+        for (offset in proxyOffsets) {
+            if (offset == Vec3i.ZERO) continue
+            val pos = blockPos.offset(offset)
+            val state = levelAccess.getBlockState(pos)
+            if (state.block is QuellcraftProxyBlock) levelAccess.removeBlock(pos, true)
+        }
+    }
 
+    // Check that all proxy positions can be replaced
     override fun getStateForPlacement(blockPlaceContext: BlockPlaceContext): BlockState? {
         val level = blockPlaceContext.level
         val pos = blockPlaceContext.clickedPos
@@ -36,14 +45,23 @@ abstract class QuellcraftBigBlock(settings: Properties) : BaseEntityBlock(settin
         return super.getStateForPlacement(blockPlaceContext)
     }
 
+    // Also place proxy blocks. This also works with the `/setblock` command
     override fun onPlace(blockState: BlockState, level: Level, blockPos: BlockPos, blockState2: BlockState, bl: Boolean) {
         for (offset in proxyOffsets) {
             if (offset == Vec3i.ZERO) continue
-            val state = getProxyBlock().withOriginOffset(offset)
+            val state = getProxyBlock().withOffsetToSource(offset)
             level.setBlock(blockPos.offset(offset), state, UPDATE_NEIGHBORS or UPDATE_CLIENTS)
         }
     }
 
+    override fun getShape(blockState: BlockState, blockGetter: BlockGetter, blockPos: BlockPos, collisionContext: CollisionContext): VoxelShape = shape
+
+    // Called by proxies to handle pick block
+    fun getCloneItemStackWrapper(levelReader: LevelReader, blockPos: BlockPos, blockState: BlockState, bl: Boolean): ItemStack? {
+        return getCloneItemStack(levelReader, blockPos, blockState, bl)
+    }
+
+    // Handle all destruction cases
     fun explosionHitWrapper(blockState: BlockState, serverLevel: ServerLevel, blockPos: BlockPos, explosion: Explosion, biConsumer: BiConsumer<ItemStack?, BlockPos?>) {
         onExplosionHit(blockState, serverLevel, blockPos, explosion, biConsumer)
     }
@@ -56,18 +74,5 @@ abstract class QuellcraftBigBlock(settings: Properties) : BaseEntityBlock(settin
     override fun destroy(levelAccessor: LevelAccessor, blockPos: BlockPos, blockState: BlockState) {
         removeProxies(levelAccessor, blockPos)
         super.destroy(levelAccessor, blockPos, blockState)
-    }
-
-    fun removeProxies(levelAccess: LevelAccessor, blockPos: BlockPos) {
-        for (offset in proxyOffsets) {
-            if (offset == Vec3i.ZERO) continue
-            val pos = blockPos.offset(offset)
-            val state = levelAccess.getBlockState(pos)
-            if (state.block is QuellcraftProxyBlock) levelAccess.removeBlock(pos, true)
-        }
-    }
-
-    fun getCloneItemStackWrapper(levelReader: LevelReader, blockPos: BlockPos, blockState: BlockState, bl: Boolean): ItemStack? {
-        return getCloneItemStack(levelReader, blockPos, blockState, bl)
     }
 }
