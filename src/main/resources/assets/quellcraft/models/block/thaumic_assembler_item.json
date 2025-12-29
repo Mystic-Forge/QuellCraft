@@ -4,10 +4,24 @@
 	"parent": "block/block",
 	"texture_size": [32, 32],
 	"textures": {
+		"4": "quellcraft:block/thaumic_assembler_bottom",
+		"8": "quellcraft:block/thaumic_assembler_side",
 		"11": "quellcraft:block/thaumic_assembler_jaw",
 		"particle": "quellcraft:block/thaumic_assembler_bottom"
 	},
 	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [16, 16, 16],
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#8"},
+				"east": {"uv": [0, 0, 16, 16], "texture": "#8"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#8"},
+				"west": {"uv": [0, 0, 16, 16], "texture": "#8"},
+				"up": {"uv": [0, 16, 16, 0], "texture": "#11"},
+				"down": {"uv": [0, 0, 16, 16], "texture": "#4"}
+			}
+		},
 		{
 			"from": [3, 16, 3],
 			"to": [13, 17, 13],

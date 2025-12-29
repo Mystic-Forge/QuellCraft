@@ -12,11 +12,15 @@ import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.MenuScreens
 import net.minecraft.client.renderer.RenderPipelines.GLOBALS_SNIPPET
 import net.minecraft.client.renderer.RenderPipelines.MATRICES_PROJECTION_SNIPPET
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers
 import net.minecraft.resources.ResourceLocation
 import net.mysticforge.quellcraft.ModStatusEffects
 import net.mysticforge.quellcraft.Quellcraft
+import net.mysticforge.quellcraft.block.ModBlocks
+import net.mysticforge.quellcraft.block.entity.GravityExtractorEntity
 import net.mysticforge.quellcraft.client.networking.PacketReceiver
 import net.mysticforge.quellcraft.client.render.accessory.AccessoryRenderers
+import net.mysticforge.quellcraft.client.render.renderer.GravityExtractorRenderer
 import net.mysticforge.quellcraft.client.screens.BlueprintScreen
 import net.mysticforge.quellcraft.client.screens.ProjectDeskScreen
 import net.mysticforge.quellcraft.screenhandler.ModScreenHandlers
@@ -41,24 +45,46 @@ object QuellCraftClient : ClientModInitializer {
     override fun onInitializeClient() {
         PacketReceiver
         BlueprintScreen
+
         MenuScreens.register(ModScreenHandlers.projectDesk, ::ProjectDeskScreen)
         AccessoryRenderers
+
+        BlockEntityRenderers.register<GravityExtractorEntity>(ModBlocks.gravityExtractorEntityType, ::GravityExtractorRenderer)
+
 //        ModelLoadingPlugin.register(QuellcraftModelLoadingPlugin)
 
-//        ModItems.sorcererHat.onCreateGeoRenderer = { consumer ->
-//            consumer.accept(object : GeoRenderProvider {
-//                private var renderer: SorcererHatArmorRenderer<*>? = null
-//                override fun <S : HumanoidRenderState> getGeoArmorRenderer(
-//                    renderState: S?,
-//                    itemStack: ItemStack?,
-//                    equipmentSlot: EquipmentSlot?,
-//                    type: EquipmentClientInfo.LayerType?,
-//                    original: HumanoidModel<S?>?
-//                ): GeoArmorRenderer<*, *> {
-//                    if (renderer == null) renderer = SorcererHatArmorRenderer<>()
-//                    return renderer!!
+//        ModItems.sorcererHat.onCreateGeoRenderer = { it.accept(SorcererHatGeoRenderer()) }
+
+
+//        Thread {
+//            Thread.sleep(5000)
+//            val modelManager = Minecraft.getInstance().modelManager as FabricBakedModelManager
+//            val model = Minecraft.getInstance().modelManager.getItemModel(ResourceLocation.fromNamespaceAndPath(Quellcraft.MOD_ID, "sorcerer_hat_penis"))
+//            println("WE FOUND THE MODEL!: $model")
+//        }.start()
+
+//        LivingEntityFeatureRendererRegistrationCallback.EVENT
+//            .register(LivingEntityFeatureRendererRegistrationCallback { entityType, entityRenderer, registrationHelper, context ->
+//                if (entityRenderer is PlayerRenderer) {
+//                    registrationHelper!!.register(object : RenderLayer<PlayerRenderState, PlayerModel>(entityRenderer) {
+//                        override fun render(
+//                            poseStack: PoseStack,
+//                            multiBufferSource: MultiBufferSource,
+//                            i: Int,
+//                            entityRenderState: PlayerRenderState,
+//                            f: Float,
+//                            g: Float
+//                        ) {
+//                            val entityModel = getParentModel()
+//                            entityModel.root().translateAndRotate(poseStack)
+//                            entityModel.getHead().translateAndRotate(poseStack)
+//                            entityRenderState.mainHandItem?.render(poseStack, multiBufferSource, i, OverlayTexture.NO_OVERLAY)
+//                        }
+//                    })
 //                }
 //            })
+
+//        EntityRenderers.createPlayerRenderers(EntityRendererProvider)
     }
 
     fun drawDistortedEffect(context: GuiGraphics, tickCounter: DeltaTracker) {

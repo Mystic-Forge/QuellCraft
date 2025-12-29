@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "quellcraft:block/gravity_extractor" }
+  }
+}
