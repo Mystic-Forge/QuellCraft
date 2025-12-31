@@ -25,9 +25,7 @@ class GravityExtractorEntity(blockPos: BlockPos, blockState: BlockState) :
 
     class GravityExtractorRenderState {
         var time: Float = 0f
-        val rotation: Float
-            get() = time
-        val y
-            get() = (Math.sin(time.toDouble()).toFloat() + 1f)
+        fun getRotation(tickTime: Float) = time + tickTime
+        fun getYOffset(tickTime: Float)= (Math.sin((time + tickTime).toDouble()).toFloat() + 1f)
     }
 }

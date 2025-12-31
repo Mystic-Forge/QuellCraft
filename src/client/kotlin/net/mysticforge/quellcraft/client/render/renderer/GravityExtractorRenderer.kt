@@ -33,7 +33,7 @@ class GravityExtractorRenderer(context: BlockEntityRendererProvider.Context) : B
         poseStack.pushPose()
         poseStack.translate(0.5f, 1.5f, 0.5f)
         poseStack.mulPose(Quaternionf(1f, 0f, 0f, 0f))
-        model.doAnim(blockEntity.renderState)
+        model.doAnim(f / 20f, blockEntity.renderState)
         model.renderToBuffer(poseStack, vertexConsumer, i, j)
         poseStack.popPose()
     }

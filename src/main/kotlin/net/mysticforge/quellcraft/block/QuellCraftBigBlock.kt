@@ -13,7 +13,7 @@ import net.minecraft.world.phys.shapes.VoxelShape
 import java.util.function.BiConsumer
 
 /**
- * Base class for "big blocks" that use `QuellCraftProxyBlock`s to occupy multiple positions.
+ * Base class for `BigBlock`s that use `QuellCraftProxyBlock`s to occupy multiple positions.
  */
 abstract class QuellCraftBigBlock(settings: Properties) : BaseEntityBlock(settings) {
     abstract val proxyOffsets: List<Vec3i>
@@ -24,7 +24,7 @@ abstract class QuellCraftBigBlock(settings: Properties) : BaseEntityBlock(settin
 
     abstract fun getProxyBlock(): QuellcraftProxyBlock
 
-    /** Remove all proxy blocks associated to this BigBlock. This does not "destroy" them, it just silently removes them */
+    /** Remove all proxy blocks associated to this BigBlock. This does not "destroy" them, it just silently removes them. */
     fun removeProxies(levelAccess: LevelAccessor, blockPos: BlockPos) {
         for (offset in proxyOffsets) {
             if (offset == Vec3i.ZERO) continue

@@ -37,10 +37,10 @@ class GravityExtractorModel(root: ModelPart) : Model(root, RenderType::entitySol
         this.bb_main = root.getChild("bb_main")
     }
 
-    fun doAnim(renderState: GravityExtractorEntity.GravityExtractorRenderState) {
+    fun doAnim(tickTime: Float, renderState: GravityExtractorEntity.GravityExtractorRenderState) {
         resetPose()
-        bb_main.rotateBy(Quaternionf(AxisAngle4f(renderState.rotation, 0f, 1f, 0f)))
-        bb_main.offsetPos(Vector3f(0f, -renderState.y, 0f))
+        bb_main.rotateBy(Quaternionf(AxisAngle4f(renderState.getRotation(tickTime), 0f, 1f, 0f)))
+        bb_main.offsetPos(Vector3f(0f, -renderState.getYOffset(tickTime), 0f))
     }
 
     companion object {

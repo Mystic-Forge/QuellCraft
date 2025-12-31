@@ -7,9 +7,10 @@
     "AbstractBlockSettingsAccessor",
     "EntityMixin",
     "LivingEntityMixin",
+    "MappedRegistryAccessor",
     "MinecraftServerAccessor",
     "PlayerMixin",
-    "MappedRegistryAccessor"
+    "ServerLevelMixin"
   ],
   "injectors": {
     "defaultRequire": 1

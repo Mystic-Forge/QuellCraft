@@ -1,31 +1,23 @@
 package net.mysticforge.quellcraft.components
 
-import org.ladysnake.cca.api.v3.component.ComponentV3
-import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent
-import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent
-import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.effect.MobEffectInstance
-import net.minecraft.world.level.storage.ValueInput
-import net.minecraft.world.level.storage.ValueOutput
+import net.minecraft.world.entity.LivingEntity
 import net.mysticforge.quellcraft.ModStatusEffects
 import net.mysticforge.quellcraft.QuellcraftConfig
+import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent
+import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent
 
-interface IntComponent : ComponentV3 {
-    fun getValue(): Int
-}
+class EntityQuellInfusionComponent(private val entity: LivingEntity) :
+    ActuallyAutoSyncedComponent(entity, ModComponents.quellInfusion),
+    AutoSyncedComponent,
+    ServerTickingComponent
+{
+    private var infusionAmount by autoSyncedOptionalValue<Int>("infusion")
 
-class EntityQuellInfusionComponent(private val entity: LivingEntity) : IntComponent, AutoSyncedComponent, ServerTickingComponent {
-    companion object {
-        const val KEY = "quell_infusion"
-    }
-
-    private var infusionAmount = 0
-
-    override fun getValue() = infusionAmount
+    fun getValue() = infusionAmount
 
     fun setValue(value: Int) {
-        infusionAmount = value
-        ModComponents.quellInfusion.sync(entity)
+        infusionAmount = OptionalValue.Set(value)
 
         val targetAmplifier = (value / 100).coerceAtMost(5)
 
@@ -44,18 +36,12 @@ class EntityQuellInfusionComponent(private val entity: LivingEntity) : IntCompon
     }
 
     fun addValue(value: Int) {
-        setValue(infusionAmount + value)
+        setValue(infusionAmount.getOrDefault(0) + value)
     }
 
     override fun serverTick() {
-        if (infusionAmount > 0 && entity.random.nextFloat() < QuellcraftConfig.quellInfusionDecay) setValue(infusionAmount - 1)
-    }
-
-    override fun readData(p0: ValueInput) {
-        infusionAmount = p0.getIntOr(KEY, 0)
-    }
-
-    override fun writeData(p0: ValueOutput) {
-        p0.putInt(KEY, infusionAmount)
+        if (infusionAmount !is OptionalValue.Unset && entity.random.nextFloat() < QuellcraftConfig.quellInfusionDecay) {
+            addValue(-1)
+        }
     }
 }
